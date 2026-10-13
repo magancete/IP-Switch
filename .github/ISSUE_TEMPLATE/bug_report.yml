@@ -1,0 +1,91 @@
+# Bug report form. The app (Settings › About › Feedback) opens the template chooser and copies
+# "IP Switch <version> · <Windows> · Language: <lang>" to the clipboard, to paste into the fields below.
+name: 🐞 Bug report · Informar de un error
+description: Something is not working as expected · Algo no funciona como debería
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por informar. Antes de enviarlo, comprueba que no exista ya un issue igual.
+        Thanks for reporting! Please check that a similar issue does not already exist.
+
+        > **Privacidad:** no incluyas datos sensibles (IP públicas, nombres de redes de tu empresa, etc.).
+
+  - type: textarea
+    id: description
+    attributes:
+      label: ¿Qué ocurre? · What happens?
+      description: Describe el problema con claridad. · A clear description of the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducirlo · Steps to reproduce
+      placeholder: |
+        1. Abrir «Perfiles»
+        2. Aplicar el perfil «…»
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ¿Qué esperabas? · Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: Mensaje de error · Error message
+      description: Texto de la notificación o del error de netsh, si lo hay. · Notification or netsh error text, if any.
+      render: text
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área · Area
+      options:
+        - Aplicar perfiles / Applying profiles
+        - Editor de perfiles / Profile editor
+        - Inicio y adaptadores / Home and adapters
+        - Vista reducida o bandeja / Compact view or tray
+        - Atajos o WiFi automática / Hotkeys or WiFi auto-switch
+        - Línea de comandos / Command line
+        - Ajustes / Settings
+        - Otro / Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión de IP Switch · IP Switch version
+      description: Ajustes › Acerca de · Settings › About (copiado al portapapeles desde la app · copied to the clipboard by the app)
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Windows
+      placeholder: "Windows 11 23H2 (22631)"
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Idioma de la app · App language
+      placeholder: "es"
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Capturas · Screenshots
+      description: Arrastra aquí imágenes si ayudan. · Drag images here if they help.

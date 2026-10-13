@@ -1,0 +1,56 @@
+<ui:FluentWindow x:Class="IPSwitch.Windows.RevertPromptWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="{DynamicResource Revert_Title}"
+                 Width="420"
+                 SizeToContent="Height"
+                 ResizeMode="NoResize"
+                 Topmost="True"
+                 ShowInTaskbar="True"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Default"
+                 WindowStartupLocation="CenterScreen">
+    <!--
+        "Keep these changes?" dialog shown when there is no connectivity after applying a profile.
+        If it is not answered before the countdown ends, the previous configuration is restored.
+    -->
+
+    <StackPanel>
+        <ui:TitleBar Title="{DynamicResource Revert_Title}" ShowMaximize="False" ShowMinimize="False" CanMaximize="False">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="{StaticResource AppIconSmallImage}" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <!-- Same layout as Windows' "Keep these display settings?" dialog -->
+        <StackPanel Margin="24,8,24,20">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <ui:SymbolIcon Symbol="Warning24" FontSize="28" Margin="0,0,12,0"
+                               Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                <TextBlock x:Name="MessageText" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="320" />
+            </StackPanel>
+
+            <TextBlock x:Name="CountdownText" FontWeight="SemiBold" />
+        </StackPanel>
+
+        <!-- Command area: primary action first; Enter/Esc revert, the safe option -->
+        <Border Padding="24,20,24,24"
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ui:Button Grid.Column="0" Content="{DynamicResource Revert_Keep}" Appearance="Primary"
+                           HorizontalAlignment="Stretch" Height="32" Click="OnKeepClick" />
+                <ui:Button Grid.Column="2" Content="{DynamicResource Revert_Revert}" HorizontalAlignment="Stretch"
+                           Height="32" IsCancel="True" IsDefault="True" Click="OnRevertClick" />
+            </Grid>
+        </Border>
+    </StackPanel>
+</ui:FluentWindow>

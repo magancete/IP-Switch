@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    Settings shared by every project in the repository (application and tests).
+    The release version is defined here only: it flows into the assembly, the About page,
+    the update check and the issue templates.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Deterministic>true</Deterministic>
+
+    <Version>1.0.0</Version>
+    <Product>IP Switch</Product>
+    <Company>Carlos Magán</Company>
+    <Authors>Carlos Magán</Authors>
+    <Copyright>© 2026 Carlos Magán</Copyright>
+    <RepositoryUrl>https://github.com/magancete/IP-Switch</RepositoryUrl>
+  </PropertyGroup>
+</Project>

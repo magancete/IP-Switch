@@ -1,0 +1,11 @@
+# Template chooser (https://github.com/magancete/IP-Switch/issues/new/choose), opened from the app's
+# single "Report a bug or suggest an improvement" button. Blank issues are disabled so every report
+# gets a category and a label.
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation · Documentación
+    url: https://github.com/magancete/IP-Switch#readme
+    about: Usage, command line and troubleshooting · Uso, línea de comandos y solución de problemas
+  - name: 🔒 Security vulnerability · Vulnerabilidad de seguridad
+    url: https://github.com/magancete/IP-Switch/blob/master/SECURITY.md
+    about: Do not open a public issue; see the security policy · No abras un issue público; consulta la política de seguridad

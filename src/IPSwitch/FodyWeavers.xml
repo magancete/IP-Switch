@@ -1,0 +1,4 @@
+<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+  <!-- Compressed (default): measured smaller (3.3 MB vs 7.6 MB) with the same startup time and less memory -->
+  <Costura />
+</Weavers>

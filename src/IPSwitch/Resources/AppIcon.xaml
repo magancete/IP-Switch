@@ -1,0 +1,103 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Application icon, vector master (256 x 256 design grid, Fluent style).
+        Two stacked network profile cards and two opposite arrows: switching between profiles.
+
+        - AppIconImage: full detail, for 32 px and larger.
+        - AppIconSmallImage: simplified (one card, thicker arrows) so it stays legible at 16-24 px.
+
+        The app uses these drawings directly (title bars, About), so they are sharp at any DPI.
+        Resources/favicon.ico (executable, taskbar, tray) is generated from this file with
+        tools/Export-Icon.ps1; docs/images/icon.svg is the same artwork for the README.
+    -->
+
+    <LinearGradientBrush x:Key="AppIconFrontCardBrush" StartPoint="0,0" EndPoint="0.3,1">
+        <GradientStop Color="#3FA9F5" Offset="0" />
+        <GradientStop Color="#0B5CC4" Offset="1" />
+    </LinearGradientBrush>
+
+    <DrawingImage x:Key="AppIconImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <!-- Fixed 256 x 256 frame -->
+                <GeometryDrawing Brush="Transparent" Geometry="M0,0 H256 V256 H0 Z" />
+
+                <!-- Soft contact shadow -->
+                <GeometryDrawing Brush="#26000000">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="30,96,186,146" RadiusX="34" RadiusY="34" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <!-- Back card: the other profile -->
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0.3,1">
+                            <GradientStop Color="#9BDCFF" Offset="0" />
+                            <GradientStop Color="#4BA6EE" Offset="1" />
+                        </LinearGradientBrush>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#33003A75" Thickness="3" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="72,22,162,124" RadiusX="28" RadiusY="28" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#40FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="84,30,138,6" RadiusX="3" RadiusY="3" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <!-- Front card: the current profile -->
+                <GeometryDrawing Brush="{StaticResource AppIconFrontCardBrush}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#33003A75" Thickness="3" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="22,80,190,150" RadiusX="32" RadiusY="32" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#38FFFFFF">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="38,88,158,6" RadiusX="3" RadiusY="3" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <!-- Switch arrows -->
+                <GeometryDrawing Geometry="M60,132 H172 M150,110 L172,132 L150,154 M174,182 H62 M84,160 L62,182 L84,204">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="19" StartLineCap="Round" EndLineCap="Round" LineJoin="Round">
+                            <Pen.Brush>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#FFFFFF" Offset="0" />
+                                    <GradientStop Color="#D4EBFF" Offset="1" />
+                                </LinearGradientBrush>
+                            </Pen.Brush>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="AppIconSmallImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="M0,0 H256 V256 H0 Z" />
+                <GeometryDrawing Brush="{StaticResource AppIconFrontCardBrush}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="8,20,240,216" RadiusX="44" RadiusY="44" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M50,92 H196 M162,58 L196,92 L162,126 M206,164 H60 M94,130 L60,164 L94,198">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="White" Thickness="30" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

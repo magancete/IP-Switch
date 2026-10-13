@@ -1,0 +1,223 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!--
+        Spanish UI texts. Every key must also exist in Strings.en.xaml (checked by tools/Check-Resources.ps1).
+        Usage: {DynamicResource Key} in XAML; Loc.Get("Key") / Loc.Format("Key", args) in code.
+    -->
+
+    <!-- Common -->
+    <sys:String x:Key="Common_Save">Guardar</sys:String>
+    <sys:String x:Key="Common_Cancel">Cancelar</sys:String>
+    <sys:String x:Key="Common_Delete">Eliminar</sys:String>
+    <sys:String x:Key="Common_Refresh">Actualizar</sys:String>
+    <sys:String x:Key="Common_Ok">Aceptar</sys:String>
+    <sys:String x:Key="Common_NotAvailable">N/D</sys:String>
+    <sys:String x:Key="Common_None">Ninguno</sys:String>
+
+    <!-- Navigation / tray -->
+    <sys:String x:Key="Nav_Home">Inicio</sys:String>
+    <sys:String x:Key="Nav_Profiles">Perfiles</sys:String>
+    <sys:String x:Key="Nav_Settings">Ajustes</sys:String>
+    <sys:String x:Key="Tray_Show">Abrir IP Switch</sys:String>
+    <sys:String x:Key="Tray_Exit">Salir</sys:String>
+    <sys:String x:Key="Tray_ApplyProfile">Aplicar perfil</sys:String>
+    <sys:String x:Key="Tray_StillRunning">IP Switch sigue ejecutándose en el área de notificación.</sys:String>
+
+    <!-- Compact view -->
+    <sys:String x:Key="Compact_Enter">Vista reducida</sys:String>
+    <sys:String x:Key="Compact_Expand">Vista completa</sys:String>
+    <sys:String x:Key="Quick_NoProfiles">No hay perfiles para este adaptador.</sys:String>
+
+    <!-- Exit dialog -->
+    <sys:String x:Key="Exit_Title">Salir de la aplicación</sys:String>
+    <sys:String x:Key="Exit_Message">¿Seguro que quieres cerrar la aplicación?</sys:String>
+    <sys:String x:Key="Exit_Confirm">Salir</sys:String>
+
+    <!-- Dashboard -->
+    <sys:String x:Key="Dash_IPv4">Dirección IPv4</sys:String>
+    <sys:String x:Key="Dash_Mask">Máscara de subred</sys:String>
+    <sys:String x:Key="Dash_Mac">Dirección MAC</sys:String>
+    <sys:String x:Key="Dash_Gateway">Puerta de enlace</sys:String>
+    <sys:String x:Key="Dash_Speed">Velocidad</sys:String>
+    <sys:String x:Key="Dash_Dns">Servidores DNS</sys:String>
+    <sys:String x:Key="Dash_Mode">Modo</sys:String>
+    <sys:String x:Key="Dash_NoAdapters">No hay adaptadores de red que mostrar</sys:String>
+    <sys:String x:Key="Empty_NoAdaptersHint">Conecta un adaptador Ethernet o WiFi, o habilítalo en Windows.</sys:String>
+    <sys:String x:Key="Empty_AllHidden">Hay {0} adaptadores ocultos. Muéstralos con «Mostrar adaptadores ocultos» en Inicio.</sys:String>
+    <sys:String x:Key="Dash_NoIp">Sin IP</sys:String>
+    <sys:String x:Key="Dash_FlushDns">Vaciar caché DNS</sys:String>
+    <sys:String x:Key="Dash_FlushDnsDone">Caché DNS vaciada.</sys:String>
+    <sys:String x:Key="Dash_SaveAsProfile">Guardar como perfil</sys:String>
+    <sys:String x:Key="Dash_RenewDhcp">Renovar DHCP</sys:String>
+    <sys:String x:Key="Dash_RenewDone">Concesión DHCP renovada en {0}.</sys:String>
+    <sys:String x:Key="Dash_Restart">Reiniciar adaptador</sys:String>
+    <sys:String x:Key="Dash_RestartConfirm">¿Reiniciar «{0}»? La conexión se cortará unos segundos.</sys:String>
+    <sys:String x:Key="Dash_RestartDone">{0} reiniciado.</sys:String>
+    <sys:String x:Key="Dash_CaptureFailed">No se pudo leer la configuración actual de este adaptador.</sys:String>
+    <sys:String x:Key="Dash_CurrentProfileName">{0} - actual</sys:String>
+    <sys:String x:Key="Dash_ProfileSaved">Perfil «{0}» guardado.</sys:String>
+    <sys:String x:Key="Dash_ShowHidden">Mostrar adaptadores ocultos</sys:String>
+    <sys:String x:Key="Dash_HiddenBadge">Oculto</sys:String>
+    <sys:String x:Key="Dash_Hide">Ocultar</sys:String>
+    <sys:String x:Key="Dash_Unhide">Mostrar</sys:String>
+    <sys:String x:Key="Dash_Disable">Deshabilitar</sys:String>
+    <sys:String x:Key="Dash_DisableConfirm">¿Deshabilitar «{0}» en Windows? Dejará de funcionar hasta que lo vuelvas a habilitar.</sys:String>
+    <sys:String x:Key="Dash_DisableDone">{0} deshabilitado.</sys:String>
+    <sys:String x:Key="Dash_Enable">Habilitar</sys:String>
+    <sys:String x:Key="Dash_EnableDone">{0} habilitado.</sys:String>
+    <sys:String x:Key="Status_Disabled">Deshabilitado</sys:String>
+    <sys:String x:Key="Dash_WifiNetworks">Redes WiFi</sys:String>
+    <sys:String x:Key="Dash_WifiNetworksFailed">No se pudo abrir la lista de redes de Windows.</sys:String>
+    <sys:String x:Key="Status_Up">Conectado</sys:String>
+    <sys:String x:Key="Status_Down">Desconectado</sys:String>
+    <sys:String x:Key="Mode_Dhcp">DHCP</sys:String>
+    <sys:String x:Key="Mode_Static">Estática</sys:String>
+
+    <!-- Profiles page -->
+    <sys:String x:Key="Profiles_Search">Buscar perfil...</sys:String>
+    <sys:String x:Key="Profiles_Add">Añadir perfil</sys:String>
+    <sys:String x:Key="Profiles_RefreshTip">Detectar perfil activo</sys:String>
+    <sys:String x:Key="Profiles_Import">Importar perfiles</sys:String>
+    <sys:String x:Key="Profiles_Export">Exportar perfiles</sys:String>
+    <sys:String x:Key="Profiles_Empty">Aún no hay perfiles. Pulsa «Añadir perfil» para crear uno.</sys:String>
+    <sys:String x:Key="Profiles_Hint">Haz doble clic en un perfil o pulsa ▶ para aplicarlo. Clic derecho para más opciones.</sys:String>
+    <sys:String x:Key="Profiles_More">Más opciones</sys:String>
+    <sys:String x:Key="Profiles_Duplicate">Duplicar</sys:String>
+    <sys:String x:Key="Profiles_Shortcut">Crear acceso directo en el escritorio</sys:String>
+    <sys:String x:Key="Profiles_CopyName">{0} (copia)</sys:String>
+    <sys:String x:Key="Profiles_ShortcutCreated">Acceso directo «{0}» creado en el escritorio.</sys:String>
+    <sys:String x:Key="Profiles_Exported">{0} perfiles exportados.</sys:String>
+    <sys:String x:Key="Profiles_Imported">{0} perfiles importados.</sys:String>
+    <sys:String x:Key="Profiles_ImportFailed">No se pudo importar el fichero: {0}</sys:String>
+    <sys:String x:Key="Col_Name">Nombre</sys:String>
+    <sys:String x:Key="Col_IP">Dirección IP</sys:String>
+    <sys:String x:Key="Col_Mask">Máscara</sys:String>
+    <sys:String x:Key="Col_Gateway">Puerta de enlace</sys:String>
+    <sys:String x:Key="Col_Dns1">DNS primario</sys:String>
+    <sys:String x:Key="Col_Dns2">DNS secundario</sys:String>
+    <sys:String x:Key="Col_Interface">Interfaz</sys:String>
+    <sys:String x:Key="Col_Actions">Acciones</sys:String>
+    <sys:String x:Key="Tip_Active">Perfil activo</sys:String>
+    <sys:String x:Key="Tip_Apply">Aplicar perfil</sys:String>
+    <sys:String x:Key="Tip_Edit">Editar perfil</sys:String>
+    <sys:String x:Key="Delete_Title">Eliminar perfil</sys:String>
+    <sys:String x:Key="Delete_Message">¿Eliminar el perfil «{0}»?</sys:String>
+
+    <!-- Notifications -->
+    <sys:String x:Key="Notify_Applying">Aplicando</sys:String>
+    <sys:String x:Key="Notify_ApplyingMsg">Aplicando «{0}» en {1}...</sys:String>
+    <sys:String x:Key="Notify_Busy">Ya se está aplicando otro perfil. Espera un momento.</sys:String>
+    <sys:String x:Key="Notify_Success">Hecho</sys:String>
+    <sys:String x:Key="Notify_Applied">«{0}» aplicado.</sys:String>
+    <sys:String x:Key="Notify_RolledBack">Cambios revertidos</sys:String>
+    <sys:String x:Key="Notify_RolledBackMsg">Sin conectividad con «{0}»: se ha restaurado la configuración anterior.</sys:String>
+    <sys:String x:Key="Notify_Error">Error</sys:String>
+    <sys:String x:Key="Notify_ApplyFailed">No se pudo aplicar «{0}»: {1}</sys:String>
+    <sys:String x:Key="Notify_Scanning">Comprobando</sys:String>
+    <sys:String x:Key="Notify_ScanningMsg">Comprobando la configuración de red actual...</sys:String>
+    <sys:String x:Key="Hotkey_FailedTitle">Atajos de teclado</sys:String>
+    <sys:String x:Key="Hotkey_Failed">Estos atajos los usa otra aplicación: {0}</sys:String>
+    <sys:String x:Key="Cli_NotFound">No existe el perfil «{0}».</sys:String>
+
+    <!-- Revert prompt -->
+    <sys:String x:Key="Revert_Title">¿Mantener esta configuración de red?</sys:String>
+    <sys:String x:Key="Revert_Message">No se ha detectado conectividad tras aplicar «{0}». ¿Quieres mantener la nueva configuración?</sys:String>
+    <sys:String x:Key="Revert_Countdown">Se revertirá en {0} s...</sys:String>
+    <sys:String x:Key="Revert_Keep">Mantener cambios</sys:String>
+    <sys:String x:Key="Revert_Revert">Revertir</sys:String>
+
+    <!-- Add / edit window -->
+    <sys:String x:Key="Edit_Title">Perfil de red</sys:String>
+    <sys:String x:Key="Edit_Name">Nombre del perfil *</sys:String>
+    <sys:String x:Key="Edit_NamePlaceholder">Ejemplo: Oficina</sys:String>
+    <sys:String x:Key="Edit_Interface">Interfaz de red *</sys:String>
+    <sys:String x:Key="Edit_Dhcp">Obtener la IP automáticamente (DHCP)</sys:String>
+    <sys:String x:Key="Edit_IP">Dirección IP *</sys:String>
+    <sys:String x:Key="Edit_Mask">Máscara de subred</sys:String>
+    <sys:String x:Key="Edit_Gateway">Puerta de enlace</sys:String>
+    <sys:String x:Key="Edit_Dns">Servidores DNS (vacío = automático)</sys:String>
+    <sys:String x:Key="Edit_Dns1">Primario</sys:String>
+    <sys:String x:Key="Edit_Dns2">Secundario</sys:String>
+    <sys:String x:Key="Edit_Color">Color</sys:String>
+    <sys:String x:Key="Edit_Notes">Notas</sys:String>
+    <sys:String x:Key="Edit_NotesPlaceholder">Opcional: dónde o cuándo usar este perfil</sys:String>
+    <sys:String x:Key="Edit_Advanced">Avanzado</sys:String>
+    <sys:String x:Key="Edit_Secondary">Direcciones IP adicionales</sys:String>
+    <sys:String x:Key="Edit_SecondaryHint">Una por línea: 10.0.0.5/24 o 10.0.0.5 255.255.255.0. Solo con IP estática.</sys:String>
+    <sys:String x:Key="Edit_Metric">Métrica de la puerta de enlace</sys:String>
+    <sys:String x:Key="Edit_MetricHint">1–9999. Los valores más bajos tienen prioridad sobre otros adaptadores.</sys:String>
+    <sys:String x:Key="Edit_Hotkey">Atajo de teclado global</sys:String>
+    <sys:String x:Key="Edit_HotkeyPlaceholder">Haz clic y pulsa una combinación</sys:String>
+    <sys:String x:Key="Edit_HotkeyHint">P. ej. Ctrl+Alt+1. Funciona aunque IP Switch esté en segundo plano. Retroceso lo borra.</sys:String>
+    <sys:String x:Key="Edit_Ssid">Aplicar automáticamente en la red WiFi</sys:String>
+    <sys:String x:Key="Edit_SsidPlaceholder">Nombre de la red (SSID)</sys:String>
+    <sys:String x:Key="Edit_SsidCurrent">Actual</sys:String>
+    <sys:String x:Key="Edit_SsidHint">Cuando este adaptador se conecte a esa red, se aplicará el perfil.</sys:String>
+    <sys:String x:Key="Edit_NoWifiConnected">El adaptador seleccionado no está conectado a ninguna red WiFi.</sys:String>
+
+    <!-- Validation -->
+    <sys:String x:Key="Val_NameRequired">El nombre del perfil es obligatorio.</sys:String>
+    <sys:String x:Key="Val_NameDuplicate">Ya existe un perfil con este nombre.</sys:String>
+    <sys:String x:Key="Val_InterfaceRequired">Selecciona una interfaz de red.</sys:String>
+    <sys:String x:Key="Val_DhcpConflict">Ya hay un perfil DHCP para esta interfaz.</sys:String>
+    <sys:String x:Key="Val_IpRequired">La dirección IP es obligatoria.</sys:String>
+    <sys:String x:Key="Val_IpInvalid">Dirección IPv4 no válida.</sys:String>
+    <sys:String x:Key="Val_MaskInvalid">Máscara de subred no válida.</sys:String>
+    <sys:String x:Key="Val_SecondaryInvalid">Cada línea debe ser una dirección con máscara (10.0.0.5/24).</sys:String>
+    <sys:String x:Key="Val_SecondaryDhcp">Las direcciones adicionales requieren IP estática.</sys:String>
+    <sys:String x:Key="Val_MetricInvalid">La métrica debe ser un número entre 1 y 9999.</sys:String>
+    <sys:String x:Key="Val_HotkeyInvalid">Atajo no válido. Usa al menos un modificador (Ctrl, Alt, Shift, Win).</sys:String>
+    <sys:String x:Key="Val_HotkeyDuplicate">Otro perfil ya usa este atajo.</sys:String>
+    <sys:String x:Key="Val_SsidDuplicate">Otro perfil de este adaptador ya está asociado a esta red.</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="Set_Appearance">Apariencia</sys:String>
+    <sys:String x:Key="Set_Theme">Tema</sys:String>
+    <sys:String x:Key="Set_ThemeDesc">Elige el tema de la aplicación</sys:String>
+    <sys:String x:Key="Theme_Light">Claro</sys:String>
+    <sys:String x:Key="Theme_Dark">Oscuro</sys:String>
+    <sys:String x:Key="Theme_System">Usar el del sistema</sys:String>
+    <sys:String x:Key="Set_Language">Idioma</sys:String>
+    <sys:String x:Key="Set_LanguageDesc">Idioma de la interfaz</sys:String>
+    <sys:String x:Key="Set_AlwaysOnTop">Siempre visible</sys:String>
+    <sys:String x:Key="Set_CompactFade">Atenuar la vista reducida si no está activa</sys:String>
+    <sys:String x:Key="Set_CompactFadeDesc">La vista reducida se vuelve translúcida mientras trabajas en otras ventanas</sys:String>
+    <sys:String x:Key="Set_NetworkPage">Página de perfiles</sys:String>
+    <sys:String x:Key="Set_VisibleColumns">Columnas visibles</sys:String>
+    <sys:String x:Key="Set_Verify">Comprobación de conexión</sys:String>
+    <sys:String x:Key="Set_VerifyEnabled">Comprobar la conectividad tras aplicar</sys:String>
+    <sys:String x:Key="Set_VerifyEnabledDesc">Si no hay respuesta, pregunta si mantener los cambios y, si no, los revierte automáticamente</sys:String>
+    <sys:String x:Key="Set_VerifyHost">Host a comprobar</sys:String>
+    <sys:String x:Key="Set_VerifyHostDesc">Vacío = la puerta de enlace del perfil</sys:String>
+    <sys:String x:Key="Set_VerifyHostPlaceholder">Puerta de enlace</sys:String>
+    <sys:String x:Key="Set_RevertTimeout">Tiempo antes de revertir</sys:String>
+    <sys:String x:Key="Set_Behavior">Sistema y comportamiento</sys:String>
+    <sys:String x:Key="Set_Startup">Iniciar con Windows</sys:String>
+    <sys:String x:Key="Set_StartupDesc">Arranca minimizada en el área de notificación (tarea programada)</sys:String>
+    <sys:String x:Key="Set_StartupFailed">No se pudo cambiar la tarea de inicio.</sys:String>
+    <sys:String x:Key="Set_TrayClick">Al hacer clic en el icono de la bandeja</sys:String>
+    <sys:String x:Key="Set_TrayClickFlyout">Abre el panel rápido</sys:String>
+    <sys:String x:Key="Set_TrayClickWindow">Abre la ventana</sys:String>
+    <sys:String x:Key="Set_MinimizeToTray">Cerrar al área de notificación</sys:String>
+    <sys:String x:Key="Set_MinimizeToTrayDesc">Al cerrar la ventana la aplicación sigue en la bandeja</sys:String>
+    <sys:String x:Key="Set_ConfirmExit">Confirmar antes de salir</sys:String>
+    <sys:String x:Key="Set_About">Acerca de</sys:String>
+    <sys:String x:Key="Set_Updates">Actualizaciones</sys:String>
+    <sys:String x:Key="Set_UpdatesDesc">Buscar versiones nuevas en GitHub al iniciar</sys:String>
+    <sys:String x:Key="Set_CheckNow">Comprobar ahora</sys:String>
+    <sys:String x:Key="Set_Repository">Repositorio</sys:String>
+    <sys:String x:Key="Set_Feedback">Comentarios</sys:String>
+    <sys:String x:Key="Set_FeedbackDesc">Abre GitHub, donde eliges el tipo: error, mejora, documentación o pregunta. Las versiones de la app y de Windows se copian al portapapeles para pegarlas en el formulario.</sys:String>
+    <sys:String x:Key="Set_FeedbackButton">Informar de un error o proponer una mejora</sys:String>
+    <sys:String x:Key="Set_FeedbackFailed">No se pudo abrir el navegador.</sys:String>
+    <sys:String x:Key="Set_DataFolder">Carpeta de datos</sys:String>
+    <sys:String x:Key="Set_DataFolderDesc">Aquí se guardan los perfiles y los ajustes, nunca junto al ejecutable</sys:String>
+    <sys:String x:Key="Set_OpenFolder">Abrir carpeta</sys:String>
+
+    <!-- Updates -->
+    <sys:String x:Key="Update_Title">Actualizaciones</sys:String>
+    <sys:String x:Key="Update_Available">Está disponible la versión {0}.</sys:String>
+    <sys:String x:Key="Update_UpToDate">Ya tienes la última versión.</sys:String>
+    <sys:String x:Key="Update_Open">Abrir página de descarga</sys:String>
+</ResourceDictionary>

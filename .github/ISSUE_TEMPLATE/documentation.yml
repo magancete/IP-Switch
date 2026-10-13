@@ -1,0 +1,25 @@
+# Documentation issue form, listed in the template chooser opened from the app (Settings › About › Feedback).
+name: 📝 Documentation · Documentación
+description: Something in the README or the docs is wrong, missing or unclear · Algo de la documentación está mal, falta o no se entiende
+labels: ["documentation"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Where? · ¿Dónde?
+      description: File and section, or a link. · Fichero y sección, o un enlace.
+      placeholder: "README.md › Command line"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing? · ¿Qué está mal o qué falta?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested text · Texto propuesto

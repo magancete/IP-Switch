@@ -1,0 +1,45 @@
+<ui:FluentWindow x:Class="IPSwitch.Windows.TrayFlyoutWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:controls="clr-namespace:IPSwitch.Controls"
+                 Title="IP Switch"
+                 Width="340"
+                 MaxHeight="560"
+                 SizeToContent="Height"
+                 ResizeMode="NoResize"
+                 ShowInTaskbar="False"
+                 Topmost="True"
+                 WindowStyle="None"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round"
+                 WindowStartupLocation="Manual">
+    <!--
+        Tray icon flyout (similar to the Windows network flyout).
+        It is placed next to the notification area and hides when it loses focus.
+    -->
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,10">
+            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Open24}" Appearance="Transparent" Padding="8,6"
+                       ToolTip="{DynamicResource Tray_Show}" Click="OnOpenClick" />
+            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Transparent" Padding="8,6"
+                       ToolTip="{DynamicResource Common_Refresh}" Click="OnRefreshClick" />
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Source="{StaticResource AppIconSmallImage}" Width="16" Height="16" Margin="0,0,8,0" />
+                <TextBlock Text="IP Switch" FontWeight="SemiBold" />
+            </StackPanel>
+        </DockPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <controls:QuickPanel x:Name="Panel" />
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>

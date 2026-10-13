@@ -1,0 +1,125 @@
+<UserControl x:Class="IPSwitch.Controls.QuickPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:IPSwitch.Converters"
+             xmlns:viewmodels="clr-namespace:IPSwitch.ViewModels"
+             d:DataContext="{d:DesignInstance viewmodels:QuickPanelViewModel, IsDesignTimeCreatable=False}"
+             d:DesignWidth="320"
+             mc:Ignorable="d">
+    <!--
+        Quick panel: list of adapters with their current IP address and one button per profile to apply it with one click.
+        Reused by the compact view (CompactWindow) and the tray flyout (TrayFlyoutWindow).
+        The host window sets the DataContext (QuickPanelViewModel).
+    -->
+
+    <UserControl.Resources>
+        <converters:StringToBrushConverter x:Key="ColorBrush" />
+
+        <Style x:Key="ProfileButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Appearance" Value="Secondary" />
+            <Setter Property="Margin" Value="0,6,6,0" />
+            <Setter Property="Padding" Value="10,6" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                    <Setter Property="Appearance" Value="Primary" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasNotes}" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Notes}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsValid}" Value="False">
+                    <Setter Property="ToolTip" Value="{Binding ValidationMessage}" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Empty state: no adapters available, or all of them hidden -->
+        <StackPanel Margin="8,16,8,16" HorizontalAlignment="Center"
+                    Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ui:SymbolIcon Symbol="PlugDisconnected24" FontSize="32" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <TextBlock Margin="0,8,0,4" HorizontalAlignment="Center" FontWeight="SemiBold"
+                       Text="{DynamicResource Dash_NoAdapters}" TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="12"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{Binding EmptyHint}" />
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding Adapters}" Focusable="False">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewmodels:QuickAdapter}">
+                    <Border Margin="0,0,0,10"
+                            Padding="12,10"
+                            CornerRadius="6"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1">
+                        <StackPanel>
+                            <DockPanel LastChildFill="True">
+                                <ui:SymbolIcon DockPanel.Dock="Left" FontSize="18" Margin="0,0,8,0"
+                                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
+                                    <ui:SymbolIcon.Style>
+                                        <Style TargetType="ui:SymbolIcon">
+                                            <Setter Property="Symbol" Value="Connector24" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsWifi}" Value="True">
+                                                    <Setter Property="Symbol" Value="Wifi124" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:SymbolIcon.Style>
+                                </ui:SymbolIcon>
+                                <!-- WiFi: button to open the Windows network panel -->
+                                <ui:Button DockPanel.Dock="Right" Margin="6,0,0,0" Padding="6,2"
+                                           Appearance="Transparent"
+                                           Icon="{ui:SymbolIcon WifiSettings20}"
+                                           ToolTip="{DynamicResource Dash_WifiNetworks}"
+                                           Click="OnWifiNetworksClick"
+                                           Visibility="{Binding IsWifi, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding IpAddress}" FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+
+                            <TextBlock Margin="0,6,0,0" FontSize="12"
+                                       Text="{DynamicResource Quick_NoProfiles}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Visibility="{Binding HasNoProfiles, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                            <ItemsControl ItemsSource="{Binding Profiles}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ui:Button Style="{StaticResource ProfileButton}"
+                                                   Command="{Binding DataContext.ApplyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                   CommandParameter="{Binding}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="8" Height="8" Margin="0,0,6,0" VerticalAlignment="Center"
+                                                         Fill="{Binding Color, Converter={StaticResource ColorBrush}}"
+                                                         Visibility="{Binding HasColor, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                <ui:SymbolIcon Symbol="Checkmark16" Margin="6,0,0,0" FontSize="12"
+                                                               Visibility="{Binding IsActive, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            </StackPanel>
+                                        </ui:Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

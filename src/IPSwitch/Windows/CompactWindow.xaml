@@ -1,0 +1,62 @@
+<ui:FluentWindow x:Class="IPSwitch.Windows.CompactWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:controls="clr-namespace:IPSwitch.Controls"
+                 Title="IP Switch"
+                 Icon="pack://application:,,,/Resources/favicon.ico"
+                 Width="350"
+                 MinWidth="350"
+                 MinHeight="160"
+                 SizeToContent="Height"
+                 ResizeMode="CanResize"
+                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Default"
+                 WindowStartupLocation="Manual"
+                 Closing="OnClosing">
+    <!--
+        Compact view: small window with the quick panel (QuickPanel) to apply profiles with one click.
+        It is toggled with the main window from the title-bar button of each one.
+        MinWidth=350: minimum width so icon + title + 3 extra buttons + minimize/close (44 px each)
+        fit in the title bar without overlapping.
+    -->
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="IP Switch" ShowMaximize="False" CanMaximize="False">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="{StaticResource AppIconSmallImage}" />
+            </ui:TitleBar.Icon>
+            <!-- Refresh, pin and back to the full view, next to minimize/close -->
+            <ui:TitleBar.TrailingContent>
+                <StackPanel Orientation="Horizontal">
+                    <!-- Segoe Fluent glyphs: E72C refresh, E718 pin, EE47 back to the full view -->
+                    <Button Style="{StaticResource TitleBarGlyphButton}" Content="&#xE72C;"
+                            ToolTip="{DynamicResource Common_Refresh}" Click="OnRefreshClick" />
+                    <ToggleButton x:Name="PinButton" Style="{StaticResource TitleBarGlyphButton}" Content="&#xE718;"
+                                  ToolTip="{DynamicResource Set_AlwaysOnTop}" Click="OnPinClick" />
+                    <Button Style="{StaticResource TitleBarGlyphButton}" Content="&#xEE47;"
+                            ToolTip="{DynamicResource Compact_Expand}" Click="OnExpandClick" />
+                </StackPanel>
+            </ui:TitleBar.TrailingContent>
+        </ui:TitleBar>
+
+        <Border Grid.Row="1" Height="8" />
+
+        <!-- ScrollChanged fits MaxHeight to the content: the window is never taller than the adapters -->
+        <ScrollViewer x:Name="Scroller" Grid.Row="2" Padding="12,0,12,12" VerticalScrollBarVisibility="Auto"
+                      ScrollChanged="OnScrollChanged">
+            <controls:QuickPanel x:Name="Panel" />
+        </ScrollViewer>
+
+        <ui:SnackbarPresenter x:Name="SnackbarPresenter" Grid.Row="2" VerticalAlignment="Bottom" />
+        <ui:ContentDialogHost x:Name="DialogHost" Grid.Row="0" Grid.RowSpan="3" />
+    </Grid>
+</ui:FluentWindow>

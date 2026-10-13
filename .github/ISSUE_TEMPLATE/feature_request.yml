@@ -1,0 +1,44 @@
+# Feature request form, listed in the template chooser opened from the app (Settings › About › Feedback).
+name: ✨ Feature request · Proponer una mejora
+description: Suggest an improvement or a new feature · Propón una mejora o una nueva función
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would it solve? · ¿Qué problema resolvería?
+      description: Describe the situation where you miss it. · Cuéntanos la situación en la que lo echas de menos.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal · Propuesta
+      description: How would you like it to work? · ¿Cómo te gustaría que funcionase?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area · Área
+      options:
+        - Profiles / Perfiles
+        - Home and adapters / Inicio y adaptadores
+        - Compact view or tray / Vista reducida o bandeja
+        - Hotkeys or WiFi auto-switch / Atajos o WiFi automática
+        - Command line / Línea de comandos
+        - Appearance / Apariencia
+        - Other / Otro
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered · Alternativas consideradas
+
+  - type: input
+    id: version
+    attributes:
+      label: IP Switch version · Versión de IP Switch
+      placeholder: "1.0.0"
