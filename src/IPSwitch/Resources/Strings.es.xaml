@@ -233,4 +233,6 @@
     <sys:String x:Key="Update_ChecksumMismatch">La descarga está dañada (su SHA-256 no coincide). No se ha cambiado nada.</sys:String>
     <sys:String x:Key="Update_NoAsset">Esta versión no se puede instalar desde la app; descárgala desde GitHub.</sys:String>
     <sys:String x:Key="Update_Done">IP Switch se ha actualizado a la versión {0}.</sys:String>
+    <sys:String x:Key="Shortcut_Repaired">Accesos directos del escritorio actualizados a la nueva ubicación de IP Switch: {0}.</sys:String>
+    <sys:String x:Key="Shortcut_Title">Accesos directos</sys:String>
 </ResourceDictionary>

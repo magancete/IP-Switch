@@ -154,7 +154,7 @@ Más detalles (estructura, pruebas, CI) en el [README en inglés](README.md#buil
 | «No se pudo aplicar…» con un mensaje de `netsh` | Es el mensaje de Windows. Revisa que la IP no esté repetida y que el adaptador esté habilitado. |
 | Se revierte aunque la red funciona | La puerta de enlace no responde a ping. Indica otro host en *Ajustes → Host a comprobar* o desactiva la comprobación. |
 | Un atajo no funciona | Otra aplicación lo usa (verás un aviso). Elige otro. |
-| No arranca con Windows tras mover el `.exe` | Ábrelo una vez desde la nueva ubicación: la tarea de inicio se actualiza sola. |
+| No arranca con Windows, o falla un acceso directo de perfil, tras mover el `.exe` | Ábrelo una vez desde la nueva ubicación: la tarea de inicio y los accesos directos del escritorio se actualizan solos. |
 | No aparece un adaptador | Puede estar oculto o ser un adaptador virtual excluido. |
 | Al abrirlo no pasa nada | Ya está en ejecución: busca su icono en el área de notificación. |
 

@@ -233,4 +233,6 @@
     <sys:String x:Key="Update_ChecksumMismatch">The download is damaged (its SHA-256 does not match). Nothing was changed.</sys:String>
     <sys:String x:Key="Update_NoAsset">This release cannot be installed from the app; download it from GitHub.</sys:String>
     <sys:String x:Key="Update_Done">IP Switch was updated to version {0}.</sys:String>
+    <sys:String x:Key="Shortcut_Repaired">Desktop shortcuts updated to the new location of IP Switch: {0}.</sys:String>
+    <sys:String x:Key="Shortcut_Title">Shortcuts</sys:String>
 </ResourceDictionary>

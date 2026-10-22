@@ -216,7 +216,7 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | "Could not apply…" with a `netsh` message | The message comes from Windows. Check that the IP is not used by another adapter and the adapter is enabled. |
 | It rolls back although the network works | The gateway does not answer ping. Set another host in *Settings → Host to check* or turn the check off. |
 | A hotkey does not work | Another application uses it (you will see a warning). Choose another one. |
-| It does not start with Windows after moving the `.exe` | Open it once from the new location: the startup task is updated automatically. |
+| It does not start with Windows, or a profile shortcut fails, after moving the `.exe` | Open it once from the new location: the startup task and the desktop shortcuts are updated automatically. |
 | An adapter is missing | It may be hidden (*Show hidden adapters*) or be an excluded virtual adapter. |
 | Nothing happens when launching it | It is already running: look for its icon in the notification area. |
 

@@ -131,7 +131,7 @@ namespace IPSwitch.Windows
             if (_settings.CheckForUpdates)
                 _ = CheckForUpdatesAsync(silent: true);
 
-            _ = SynchronizeStartupTaskAsync();
+            _ = RepairAfterMoveAsync();
             AnnounceUpdateIfNeeded();
         }
 
@@ -149,15 +149,28 @@ namespace IPSwitch.Windows
         }
 
         /// <summary>
-        /// Repairs the startup task in the background (missing, or registered for another copy of the executable)
-        /// and adopts a task created by an earlier version.
+        /// Keeps what points to the executable working after it was moved or updated, in the background: the startup
+        /// task (<see cref="SynchronizeStartupTaskAsync"/>) and the desktop shortcuts of the profiles.
+        /// </summary>
+        private async Task RepairAfterMoveAsync()
+        {
+            // They belong to the regular installation: copies run with an isolated data folder (tests, development)
+            // must not adopt them or point them to themselves
+            if (AppPaths.IsDataFolderOverridden) return;
+
+            await SynchronizeStartupTaskAsync();
+
+            int repaired = await Task.Run(ShortcutService.RepairDesktopShortcuts);
+            if (repaired > 0)
+                ShowNotification(Loc.Get("Shortcut_Title"), Loc.Format("Shortcut_Repaired", repaired), ControlAppearance.Info);
+        }
+
+        /// <summary>
+        /// Repairs the startup task (missing, or registered for another copy of the executable) and adopts a task
+        /// created by an earlier version.
         /// </summary>
         private async Task SynchronizeStartupTaskAsync()
         {
-            // The task belongs to the regular installation: copies run with an isolated data folder (tests, development)
-            // must not adopt it or point it to themselves
-            if (AppPaths.IsDataFolderOverridden) return;
-
             bool wanted = _settings.StartWithWindows;
             bool actual = await Task.Run(() => StartupService.Synchronize(wanted));
             if (actual == wanted) return;

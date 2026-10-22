@@ -13,7 +13,7 @@
     <UseWPF>true</UseWPF>
     <Deterministic>true</Deterministic>
 
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Product>IP Switch</Product>
     <Company>Carlos Magán</Company>
     <Authors>Carlos Magán</Authors>

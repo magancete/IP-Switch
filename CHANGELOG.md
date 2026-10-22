@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-22
+
+### Fixed
+
+- Desktop shortcuts of profiles (*Create desktop shortcut*) stopped working after moving the executable. When IP Switch starts from a new location, it now points the shortcuts whose executable no longer exists to the new one (shortcuts to another copy that still exists are left alone) and says how many it updated, just as it already did with the *Start with Windows* task.
+
 ## [1.0.1] - 2026-10-22
 
 ### Added
@@ -42,6 +48,7 @@ Initial release.
 - Single instance, optional start with Windows, optional update check.
 - Data stored in `%AppData%\IPSwitch`.
 
-[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/magancete/IP-Switch/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/magancete/IP-Switch/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/magancete/IP-Switch/releases/tag/v1.0.0
