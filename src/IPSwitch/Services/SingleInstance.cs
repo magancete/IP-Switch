@@ -1,7 +1,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace IPSwitch.Services
 {
@@ -20,6 +24,11 @@ namespace IPSwitch.Services
     /// <item><term><c>apply&lt;TAB&gt;Name</c></term><description>Applies the profile. Replies the exit code (0 / 1 / 2).</description></item>
     /// </list>
     /// <para>So two processes can never change the network configuration at the same time.</para>
+    /// <para>
+    /// The running instance is elevated, but later launches start unelevated (see <see cref="Elevation"/>): the pipe
+    /// grants read/write to the same Windows user (elevated or not) and nobody else, and the client lets the instance
+    /// take the foreground (<c>AllowSetForegroundWindow</c>) so its window really comes to the front.
+    /// </para>
     /// </remarks>
     public sealed class SingleInstance : IDisposable
     {
@@ -34,6 +43,15 @@ namespace IPSwitch.Services
 
         /// <summary>Prefix of the command that asks the running instance to apply a profile.</summary>
         public const string ApplyCommand = "apply";
+
+        /// <summary>Time to wait for the pipe when checking whether an instance is running.</summary>
+        public static readonly TimeSpan DefaultConnectTimeout = TimeSpan.FromSeconds(1);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetNamedPipeServerProcessId(SafePipeHandle pipe, out uint serverProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern bool AllowSetForegroundWindow(uint processId);
 
         private readonly Mutex _mutex;
         private readonly CancellationTokenSource _cancellation = new();
@@ -70,7 +88,7 @@ namespace IPSwitch.Services
                     try
                     {
                         using var server = new NamedPipeServerStream(PipeName, PipeDirection.InOut, 1,
-                            PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                            PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, CreatePipeSecurity());
                         await server.WaitForConnectionAsync(token).ConfigureAwait(false);
 
                         using var reader = new StreamReader(server, Encoding.UTF8, false, 1024, leaveOpen: true);
@@ -95,14 +113,19 @@ namespace IPSwitch.Services
 
         /// <summary>Sends a command to the running instance and waits for its reply.</summary>
         /// <param name="command">Command line (see the class remarks).</param>
-        /// <param name="timeout">Maximum time to connect and get the reply.</param>
-        /// <returns>The reply, or <see langword="null"/> if the instance could not be reached in time.</returns>
-        public static async Task<string?> SendAsync(string command, TimeSpan timeout)
+        /// <param name="timeout">Maximum time to get the reply once connected.</param>
+        /// <param name="connectTimeout">Maximum time to connect; <see cref="DefaultConnectTimeout"/> if omitted.</param>
+        /// <returns>The reply, or <see langword="null"/> if no instance answered (none is running).</returns>
+        public static async Task<string?> SendAsync(string command, TimeSpan timeout, TimeSpan? connectTimeout = null)
         {
             try
             {
                 using var client = new NamedPipeClientStream(".", PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-                client.Connect((int)Math.Min(timeout.TotalMilliseconds, 5000));
+                client.Connect((int)(connectTimeout ?? DefaultConnectTimeout).TotalMilliseconds);
+
+                // The instance may need to bring its window to the front: Windows only allows it if we say so
+                if (GetNamedPipeServerProcessId(client.SafePipeHandle, out uint serverProcessId))
+                    AllowSetForegroundWindow(serverProcessId);
 
                 using var writer = new StreamWriter(client, new UTF8Encoding(false), 1024, leaveOpen: true) { AutoFlush = true };
                 using var reader = new StreamReader(client, Encoding.UTF8, false, 1024, leaveOpen: true);
@@ -117,6 +140,24 @@ namespace IPSwitch.Services
                 Debug.WriteLine($"[SingleInstance] Could not reach the running instance: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Pipe permissions: read/write for the current Windows user (also from an unelevated process) and full control
+        /// for the instance itself; other users cannot send commands to an elevated process.
+        /// </summary>
+        private static PipeSecurity CreatePipeSecurity()
+        {
+            var security = new PipeSecurity();
+            using var identity = WindowsIdentity.GetCurrent();
+            security.AddAccessRule(new PipeAccessRule(identity.User!,
+                PipeAccessRights.ReadWrite | PipeAccessRights.CreateNewInstance | PipeAccessRights.Synchronize,
+                AccessControlType.Allow));
+            security.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+                PipeAccessRights.FullControl, AccessControlType.Allow));
+            security.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
+                PipeAccessRights.FullControl, AccessControlType.Allow));
+            return security;
         }
 
         /// <summary>Builds the command that applies a profile.</summary>

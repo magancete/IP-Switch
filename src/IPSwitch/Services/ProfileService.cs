@@ -100,7 +100,10 @@ namespace IPSwitch.Services
 
             // Old or hand-edited files may contain null lists
             foreach (var p in profiles)
+            {
                 p.SecondaryAddresses ??= new List<string>();
+                p.AdditionalGateways ??= new List<string>();
+            }
 
             return profiles;
         }

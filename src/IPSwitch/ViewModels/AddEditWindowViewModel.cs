@@ -123,6 +123,12 @@ public partial class AddEditWindowViewModel : ObservableValidator
     [NotifyDataErrorInfo]
     private string secondaryAddressesText = string.Empty;
 
+    /// <summary>Additional gateways, one per line (<c>ip</c> or <c>ip metric</c>).</summary>
+    [ObservableProperty]
+    [CustomValidation(typeof(AddEditWindowViewModel), nameof(ValidateAdditionalGateways))]
+    [NotifyDataErrorInfo]
+    private string additionalGatewaysText = string.Empty;
+
     /// <summary>Gateway metric as text (1–9999).</summary>
     [ObservableProperty]
     [CustomValidation(typeof(AddEditWindowViewModel), nameof(ValidateMetric))]
@@ -158,7 +164,8 @@ public partial class AddEditWindowViewModel : ObservableValidator
 
     /// <summary>Whether the advanced section should start expanded (because it has values).</summary>
     public bool HasAdvancedValues =>
-        !string.IsNullOrWhiteSpace(SecondaryAddressesText) || GatewayMetricText.Trim() != "1" ||
+        !string.IsNullOrWhiteSpace(SecondaryAddressesText) || !string.IsNullOrWhiteSpace(AdditionalGatewaysText) ||
+        GatewayMetricText.Trim() != "1" ||
         !string.IsNullOrEmpty(Hotkey) || !string.IsNullOrEmpty(AutoApplySsid);
 
     #endregion
@@ -206,6 +213,7 @@ public partial class AddEditWindowViewModel : ObservableValidator
         Dns1 = NetworkService.IsSet(profile.PrimaryDNS) ? profile.PrimaryDNS : string.Empty;
         Dns2 = NetworkService.IsSet(profile.SecondaryDNS) ? profile.SecondaryDNS : string.Empty;
         SecondaryAddressesText = string.Join(Environment.NewLine, profile.SecondaryAddresses ?? new List<string>());
+        AdditionalGatewaysText = string.Join(Environment.NewLine, profile.AdditionalGateways ?? new List<string>());
         GatewayMetricText = profile.GatewayMetric.ToString();
         Notes = profile.Notes;
         SelectedColor = IPProfile.ColorPalette.Contains(profile.Color) ? profile.Color : string.Empty;
@@ -302,6 +310,23 @@ public partial class AddEditWindowViewModel : ObservableValidator
             : new ValidationResult(Loc.Get("Val_SecondaryInvalid"));
     }
 
+    /// <summary>Each line must be a gateway with an optional metric; not allowed with DHCP.</summary>
+    /// <param name="text">Value to validate.</param>
+    /// <param name="context">Context with the ViewModel instance.</param>
+    /// <returns>Validation result.</returns>
+    public static ValidationResult? ValidateAdditionalGateways(string text, ValidationContext context)
+    {
+        var vm = (AddEditWindowViewModel)context.ObjectInstance;
+        var lines = SplitLines(text);
+        if (lines.Count == 0) return ValidationResult.Success;
+
+        if (vm.IsDhcp) return new ValidationResult(Loc.Get("Val_GatewaysDhcp"));
+
+        return lines.All(l => IpUtils.TryParseGateway(l, out _, out _))
+            ? ValidationResult.Success
+            : new ValidationResult(Loc.Get("Val_GatewaysInvalid"));
+    }
+
     /// <summary>Integer metric between 1 and 9999.</summary>
     /// <param name="text">Value to validate.</param>
     /// <param name="context">Validation context.</param>
@@ -355,6 +380,7 @@ public partial class AddEditWindowViewModel : ObservableValidator
     partial void OnDns1Changed(string value) => ValidateAndRefresh(value, nameof(Dns1));
     partial void OnDns2Changed(string value) => ValidateAndRefresh(value, nameof(Dns2));
     partial void OnSecondaryAddressesTextChanged(string value) => ValidateAndRefresh(value, nameof(SecondaryAddressesText));
+    partial void OnAdditionalGatewaysTextChanged(string value) => ValidateAndRefresh(value, nameof(AdditionalGatewaysText));
     partial void OnGatewayMetricTextChanged(string value) => ValidateAndRefresh(value, nameof(GatewayMetricText));
     partial void OnHotkeyChanged(string value) => ValidateAndRefresh(value, nameof(Hotkey));
     partial void OnAutoApplySsidChanged(string value) => ValidateAndRefresh(value, nameof(AutoApplySsid));
@@ -379,6 +405,7 @@ public partial class AddEditWindowViewModel : ObservableValidator
             ValidateProperty(Gateway, nameof(Gateway));
         }
         ValidateProperty(SecondaryAddressesText, nameof(SecondaryAddressesText));
+        ValidateProperty(AdditionalGatewaysText, nameof(AdditionalGatewaysText));
         ValidateAndRefresh(value, nameof(IsDhcp));
     }
 
@@ -407,6 +434,7 @@ public partial class AddEditWindowViewModel : ObservableValidator
         if (string.IsNullOrWhiteSpace(SelectedInterface)) return false;
         if (ValidateMetric(GatewayMetricText, new ValidationContext(this)) != ValidationResult.Success) return false;
         if (ValidateSecondaryAddresses(SecondaryAddressesText, new ValidationContext(this)) != ValidationResult.Success) return false;
+        if (ValidateAdditionalGateways(AdditionalGatewaysText, new ValidationContext(this)) != ValidationResult.Success) return false;
 
         if (!CreateProfileFromForm().IsValid) return false;
 
@@ -431,6 +459,9 @@ public partial class AddEditWindowViewModel : ObservableValidator
         SecondaryAddresses = SplitLines(SecondaryAddressesText)
             .Select(l => IpUtils.TryNormalizeAddressWithMask(l, out var n) ? n : l)
             .ToList(),
+        AdditionalGateways = IsDhcp
+            ? new List<string>()
+            : SplitLines(AdditionalGatewaysText).Select(l => IpUtils.TryNormalizeGateway(l, out var n) ? n : l).ToList(),
         GatewayMetric = int.TryParse(GatewayMetricText?.Trim(), out int metric) ? metric : 1,
         Notes = Notes.Trim(),
         Color = SelectedColor,

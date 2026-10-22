@@ -18,7 +18,7 @@ namespace IPSwitch.Services
         /// <param name="profile">Profile to apply. It must be valid (<see cref="IPProfile.IsValid"/>).</param>
         /// <returns>List of argument strings; each one is a separate <c>netsh</c> invocation.</returns>
         /// <remarks>
-        /// Order: primary address (+ gateway), additional addresses and, last, DNS.
+        /// Order: primary address (+ gateway), additional addresses, additional gateways and, last, DNS.
         /// With DHCP the additional addresses are ignored (netsh cannot add them to a DHCP interface).
         /// </remarks>
         public static IReadOnlyList<string> BuildApplyCommands(IPProfile profile)
@@ -45,6 +45,13 @@ namespace IPSwitch.Services
                 {
                     if (IpUtils.TryParseAddressWithMask(entry, out string address, out string mask))
                         commands.Add($"interface ip add address name={name} {address} {mask}");
+                }
+
+                // Additional gateways: without their own metric they use the profile's gateway metric
+                foreach (string entry in profile.AdditionalGateways ?? new List<string>())
+                {
+                    if (IpUtils.TryParseGateway(entry, out string gatewayAddress, out int metric))
+                        commands.Add($"interface ip add address name={name} gateway={gatewayAddress} gwmetric={(metric > 0 ? metric : Math.Max(1, profile.GatewayMetric))}");
                 }
             }
 

@@ -99,6 +99,7 @@
     <sys:String x:Key="Col_Interface">Interfaz</sys:String>
     <sys:String x:Key="Col_Actions">Acciones</sys:String>
     <sys:String x:Key="Tip_Active">Perfil activo</sys:String>
+    <sys:String x:Key="Profiles_ActiveBadge">Activo</sys:String>
     <sys:String x:Key="Tip_Apply">Aplicar perfil</sys:String>
     <sys:String x:Key="Tip_Edit">Editar perfil</sys:String>
     <sys:String x:Key="Delete_Title">Eliminar perfil</sys:String>
@@ -145,6 +146,8 @@
     <sys:String x:Key="Edit_Advanced">Avanzado</sys:String>
     <sys:String x:Key="Edit_Secondary">Direcciones IP adicionales</sys:String>
     <sys:String x:Key="Edit_SecondaryHint">Una por línea: 10.0.0.5/24 o 10.0.0.5 255.255.255.0. Solo con IP estática.</sys:String>
+    <sys:String x:Key="Edit_Gateways">Puertas de enlace adicionales</sys:String>
+    <sys:String x:Key="Edit_GatewaysHint">Una por línea, opcionalmente con su métrica: 10.0.0.254 o 10.0.0.254 20. Sin métrica se usa la métrica de la puerta de enlace. Solo con IP estática.</sys:String>
     <sys:String x:Key="Edit_Metric">Métrica de la puerta de enlace</sys:String>
     <sys:String x:Key="Edit_MetricHint">1–9999. Los valores más bajos tienen prioridad sobre otros adaptadores.</sys:String>
     <sys:String x:Key="Edit_Hotkey">Atajo de teclado global</sys:String>
@@ -166,6 +169,8 @@
     <sys:String x:Key="Val_MaskInvalid">Máscara de subred no válida.</sys:String>
     <sys:String x:Key="Val_SecondaryInvalid">Cada línea debe ser una dirección con máscara (10.0.0.5/24).</sys:String>
     <sys:String x:Key="Val_SecondaryDhcp">Las direcciones adicionales requieren IP estática.</sys:String>
+    <sys:String x:Key="Val_GatewaysInvalid">Cada línea debe ser una puerta de enlace, opcionalmente seguida de su métrica (10.0.0.254 20).</sys:String>
+    <sys:String x:Key="Val_GatewaysDhcp">Las puertas de enlace adicionales requieren IP estática.</sys:String>
     <sys:String x:Key="Val_MetricInvalid">La métrica debe ser un número entre 1 y 9999.</sys:String>
     <sys:String x:Key="Val_HotkeyInvalid">Atajo no válido. Usa al menos un modificador (Ctrl, Alt, Shift, Win).</sys:String>
     <sys:String x:Key="Val_HotkeyDuplicate">Otro perfil ya usa este atajo.</sys:String>
@@ -220,4 +225,12 @@
     <sys:String x:Key="Update_Available">Está disponible la versión {0}.</sys:String>
     <sys:String x:Key="Update_UpToDate">Ya tienes la última versión.</sys:String>
     <sys:String x:Key="Update_Open">Abrir página de descarga</sys:String>
+    <sys:String x:Key="Update_AvailableInstall">La versión {0} está disponible. Instálala desde Ajustes › Acerca de.</sys:String>
+    <sys:String x:Key="Update_Confirm">La versión {0} está disponible. IP Switch la descargará, la verificará y se reiniciará.</sys:String>
+    <sys:String x:Key="Update_Install">Actualizar ahora</sys:String>
+    <sys:String x:Key="Update_Downloading">Descargando la versión {0}…</sys:String>
+    <sys:String x:Key="Update_Failed">No se pudo actualizar: {0}</sys:String>
+    <sys:String x:Key="Update_ChecksumMismatch">La descarga está dañada (su SHA-256 no coincide). No se ha cambiado nada.</sys:String>
+    <sys:String x:Key="Update_NoAsset">Esta versión no se puede instalar desde la app; descárgala desde GitHub.</sys:String>
+    <sys:String x:Key="Update_Done">IP Switch se ha actualizado a la versión {0}.</sys:String>
 </ResourceDictionary>

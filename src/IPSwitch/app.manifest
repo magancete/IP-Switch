@@ -2,11 +2,15 @@
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
   <assemblyIdentity version="1.0.0.0" name="IPSwitch.app"/>
 
-  <!-- netsh needs administrator rights to change the IP configuration -->
+  <!--
+    asInvoker: the process starts without a UAC prompt. netsh needs administrator rights, so the app
+    restarts itself elevated when no instance is running (Services/Elevation.cs); when one is already
+    running, opening the .exe again just brings it to the front, with no second prompt.
+  -->
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
-        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
       </requestedPrivileges>
     </security>
   </trustInfo>

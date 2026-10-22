@@ -133,5 +133,45 @@ namespace IPSwitch.Services
             normalized = $"{address}/{prefix}";
             return true;
         }
+
+        /// <summary>
+        /// Parses an additional gateway: an IPv4 address and, optionally, its metric
+        /// (<c>10.0.0.254</c>, <c>10.0.0.254 20</c>, <c>10.0.0.254, 20</c> or <c>10.0.0.254;20</c>).
+        /// </summary>
+        /// <param name="text">Input text.</param>
+        /// <param name="address">Resulting gateway address.</param>
+        /// <param name="metric">Metric (1–9999), or 0 when not given (the profile's gateway metric is used).</param>
+        /// <returns><see langword="true"/> if the text is valid.</returns>
+        public static bool TryParseGateway(string? text, out string address, out int metric)
+        {
+            address = string.Empty;
+            metric = 0;
+            if (string.IsNullOrWhiteSpace(text)) return false;
+
+            string[] parts = text!.Split(new[] { ' ', '\t', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length is < 1 or > 2 || !IsValidIPv4(parts[0])) return false;
+
+            if (parts.Length == 2 && (!int.TryParse(parts[1], out metric) || metric < 1 || metric > 9999))
+            {
+                metric = 0;
+                return false;
+            }
+
+            address = parts[0].Trim();
+            return true;
+        }
+
+        /// <summary>Normalizes an additional gateway to the persisted form <c>ip</c> or <c>ip metric</c>.</summary>
+        /// <param name="text">Input text in any format accepted by <see cref="TryParseGateway"/>.</param>
+        /// <param name="normalized">Resulting canonical form.</param>
+        /// <returns><see langword="true"/> if the text is valid.</returns>
+        public static bool TryNormalizeGateway(string? text, out string normalized)
+        {
+            normalized = string.Empty;
+            if (!TryParseGateway(text, out string address, out int metric)) return false;
+
+            normalized = metric > 0 ? $"{address} {metric}" : address;
+            return true;
+        }
     }
 }

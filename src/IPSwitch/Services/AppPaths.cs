@@ -42,6 +42,10 @@ namespace IPSwitch.Services
         /// <summary>Effective folder where <c>profiles.json</c> and <c>settings.json</c> are stored.</summary>
         public static string DataFolder { get; } = ResolveDataFolder();
 
+        /// <summary>Whether <see cref="DataFolderOverrideVariable"/> redirects the data (tests, development, portable setups).</summary>
+        public static bool IsDataFolderOverridden =>
+            !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(DataFolderOverrideVariable));
+
         /// <summary>Default data folder: <c>%AppData%\IPSwitch</c>.</summary>
         public static string DefaultDataFolder =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "IPSwitch");

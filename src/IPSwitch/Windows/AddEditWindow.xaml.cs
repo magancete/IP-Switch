@@ -32,6 +32,7 @@ public partial class AddEditWindow : FluentWindow
         DataContext = ViewModel;
         InitializeComponent();
         Topmost = App.Settings.AlwaysOnTop;
+        FitToWorkArea();
         AdvancedExpander.IsExpanded = ViewModel.HasAdvancedValues;
         Loaded += (_, _) => NameBox.Focus();
     }
@@ -41,6 +42,17 @@ public partial class AddEditWindow : FluentWindow
 
     /// <summary>Resulting profile if saved; <see langword="null"/> if cancelled.</summary>
     public IPProfile? ResultProfile { get; private set; }
+
+    /// <summary>
+    /// Keeps the dialog inside the screen work area on small or scaled displays: narrower if needed (down to
+    /// <see cref="FrameworkElement.MinWidth"/>) and never taller than the work area (the content scrolls).
+    /// </summary>
+    private void FitToWorkArea()
+    {
+        var area = SystemParameters.WorkArea;
+        Width = Math.Max(MinWidth, Math.Min(Width, area.Width - 32));
+        MaxHeight = area.Height - 32;
+    }
 
     private void OnCancel(object sender, RoutedEventArgs e) => DialogResult = false;
 

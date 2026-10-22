@@ -33,6 +33,18 @@ namespace IPSwitch.Pages
         /// <summary>Grid width below which the mask and gateway columns are hidden as well.</summary>
         private const double HideAddressingBelow = 700;
 
+        /// <summary>Grid width below which the adapter column is hidden too (profiles are still grouped by adapter).</summary>
+        private const double HideInterfaceBelow = 480;
+
+        /// <summary>Grid width below which the IP column is hidden too, so the action buttons always fit.</summary>
+        private const double HideIpBelow = 420;
+
+        /// <summary>Grid width below which "Add profile" shows only its icon, leaving room for the search box.</summary>
+        private const double CompactHeaderBelow = 560;
+
+        /// <summary>Width of the actions column (three buttons).</summary>
+        private const double ActionsColumnWidth = 136;
+
         private readonly ICollectionView _view;
         private string _query = string.Empty;
 
@@ -94,7 +106,27 @@ namespace IPSwitch.Pages
             ColGateway.Visibility = ToVisibility(settings.ShowGateway && roomForAddressing);
             ColDns1.Visibility = ToVisibility(settings.ShowPrimaryDns && roomForDns);
             ColDns2.Visibility = ToVisibility(settings.ShowSecondaryDns && roomForDns);
-            ColInterface.Visibility = ToVisibility(settings.ShowInterface);
+            ColInterface.Visibility = ToVisibility(settings.ShowInterface && width >= HideInterfaceBelow);
+            ColIp.Visibility = ToVisibility(width >= HideIpBelow);
+            RestoreColumnWidths();
+
+            // The text comes from the resources; when hidden, the tooltip still names the button
+            if (width < CompactHeaderBelow)
+                AddProfileButton.Content = null;
+            else
+                AddProfileButton.SetResourceReference(System.Windows.Controls.ContentControl.ContentProperty, "Profiles_Add");
+        }
+
+        /// <summary>
+        /// Puts the column widths back. When the window gets very narrow, the DataGrid shrinks fixed and auto columns
+        /// to their minimum and never widens them again, which clipped the action buttons.
+        /// </summary>
+        private void RestoreColumnWidths()
+        {
+            ColName.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+            ColActions.Width = new DataGridLength(ActionsColumnWidth);
+            foreach (var column in new DataGridColumn[] { ColIp, ColMask, ColGateway, ColDns1, ColDns2, ColInterface })
+                column.Width = DataGridLength.Auto;
         }
 
         private void OnGridSizeChanged(object sender, SizeChangedEventArgs e)

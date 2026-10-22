@@ -251,6 +251,17 @@ namespace IPSwitch.Services
                         .Cast<string>()
                         .ToList();
                     profile.Gateway = GetGateway(nic.Name) ?? Dhcp;
+
+                    // Static gateways (with their metrics) are only in the registry; extra ones become additional gateways
+                    var gateways = ReadStaticGateways(nic.Id);
+                    if (gateways.Count > 0)
+                    {
+                        profile.Gateway = gateways[0].Address;
+                        if (gateways[0].Metric > 0) profile.GatewayMetric = gateways[0].Metric;
+                        profile.AdditionalGateways = gateways.Skip(1)
+                            .Select(g => g.Metric > 0 ? $"{g.Address} {g.Metric}" : g.Address)
+                            .ToList();
+                    }
                 }
 
                 if (HasStaticDns(nic.Id))
@@ -269,6 +280,31 @@ namespace IPSwitch.Services
             catch (NetworkInformationException)
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Static default gateways of an adapter, in order, from the <c>DefaultGateway</c> and
+        /// <c>DefaultGatewayMetric</c> registry values (metric 0 = automatic).
+        /// </summary>
+        private static List<(string Address, int Metric)> ReadStaticGateways(string interfaceId)
+        {
+            try
+            {
+                using var key = Registry.LocalMachine.OpenSubKey(TcpipInterfacesKey + interfaceId);
+                var addresses = key?.GetValue("DefaultGateway") as string[] ?? new string[0];
+                var metrics = key?.GetValue("DefaultGatewayMetric") as string[] ?? new string[0];
+
+                return addresses
+                    .Select((address, i) => (Address: address.Trim(),
+                                             Metric: i < metrics.Length && int.TryParse(metrics[i], out int m) ? m : 0))
+                    .Where(g => IpUtils.IsValidIPv4(g.Address))
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[NetworkService] Registry read failed: {ex.Message}");
+                return new List<(string, int)>();
             }
         }
 

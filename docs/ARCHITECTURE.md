@@ -106,6 +106,8 @@ flowchart TD
 ```
 
 - The mutex lives in the `Global\` namespace, so only one instance runs per computer even across sessions.
+- **Elevation** (`Elevation`): the manifest is `asInvoker`, so opening the `.exe` never prompts by itself. An unelevated launch first sends its request over the pipe (granted to the same Windows user, elevated or not) and calls `AllowSetForegroundWindow` for the instance; only when nothing answers does it restart itself with `runas` — one UAC prompt — and, for `--apply`, wait for and return the elevated run's exit code. `IPSWITCH_NO_ELEVATION=1` keeps the process unelevated for UI tests.
+- **Start with Windows** (`StartupService`): `AppSettings.StartWithWindows` holds the choice and the `IPSwitch` scheduled task is registered from a full XML definition (logon trigger with a 10 s delay, `HighestAvailable`, no execution time limit, runs on battery). At every start the task is re-synchronized in the background, so moving or updating the `.exe` does not break it.
 - The pipe server handles one command at a time and replies with the outcome; the second process turns it into its exit code. If the owner does not answer (e.g. it is closing), the second process exits with an error instead of starting a second UI.
 - `ShutdownMode=OnExplicitShutdown`: the app can stay alive in the tray with no visible windows. Only `MainWindow.ExitApplication` closes it (releasing the tray, shortcuts, services and the instance).
 
@@ -206,6 +208,17 @@ The syntax is modern C#, but the BCL is .NET Framework 4.8's:
 - Mandatory XML documentation (`GenerateDocumentationFile`): the build warns (CS1591) about any undocumented public member. CI builds with warnings as errors.
 - Code comments and technical documentation are in English; `README.es.md` is the Spanish user guide.
 - Tests: [README › Tests](../README.md#tests). The integration tests use an isolated `IPSWITCH_DATA_DIR`.
+
+## Updates
+
+`UpdateService` reads the latest GitHub release (`tag_name`, `html_url` and the `IPSwitch.exe` / `IPSwitch.exe.sha256` assets). `SelfUpdater` installs it only when the user clicks *Update now*:
+
+1. Downloads the executable next to the current one (`IPSwitch.exe.download`, same volume).
+2. Verifies its SHA-256 against the release checksum; on mismatch it is deleted and nothing changes.
+3. Renames the running executable to `IPSwitch.exe.old` (Windows allows renaming, not overwriting, a running file) and moves the download into place; on failure the original name is restored.
+4. Releases the single-instance mutex and pipe, starts the new executable (it inherits the elevation) and exits. The new process deletes the `.old` file and, because `AppSettings.LastRunVersion` changed, says it was updated.
+
+`IPSWITCH_UPDATE_FEED` points the check to another URL to test the whole flow locally. Copies running with `IPSWITCH_DATA_DIR` do not touch the startup task.
 
 ## Feedback
 

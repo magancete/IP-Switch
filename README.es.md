@@ -44,7 +44,7 @@ Cambiar una IP fija en Windows obliga a pasar cada vez por *Panel de control →
 | Perfiles | Formas de aplicar |
 |---|---|
 | IP estática o DHCP, máscara, puerta de enlace con métrica, DNS | Ventana, vista reducida y panel de la bandeja |
-| Direcciones IP adicionales en el mismo adaptador | Atajos de teclado globales (p. ej. `Ctrl+Alt+1`) |
+| Direcciones IP y puertas de enlace adicionales (con métrica) | Atajos de teclado globales (p. ej. `Ctrl+Alt+1`) |
 | Color, notas, duplicar, buscar y ordenar | Automáticamente al conectarse a una red WiFi |
 | Detección del perfil activo | Línea de comandos `--apply "Oficina"` y accesos directos |
 | Importar/exportar en JSON | Comprobación de conectividad con reversión automática |
@@ -61,15 +61,15 @@ Cambiar una IP fija en Windows obliga a pasar cada vez por *Panel de control →
 <td align="center"><img src="docs/images/compact.png" alt="Vista reducida" width="260"><br><sub><b>Vista reducida</b></sub></td>
 </tr>
 <tr>
-<td align="center"><img src="docs/images/settings.png" alt="Ajustes" width="520"><br><sub><b>Ajustes</b></sub></td>
-<td align="center"><img src="docs/images/editor.png" alt="Editor de perfiles" width="220"><br><sub><b>Editor de perfiles</b></sub></td>
+<td align="center"><img src="docs/images/settings.png" alt="Ajustes" width="420"><br><sub><b>Ajustes</b></sub></td>
+<td align="center"><img src="docs/images/editor.png" alt="Editor de perfiles" width="380"><br><sub><b>Editor de perfiles</b></sub></td>
 </tr>
 </table>
 
 ## Primeros pasos
 
 1. Descarga [`IPSwitch.exe`](https://github.com/magancete/IP-Switch/releases/latest/download/IPSwitch.exe) de la última versión.
-2. Colócalo donde quieras (p. ej. `C:\Herramientas\` o una memoria USB) y ejecútalo. Acepta el aviso UAC: cambiar la IP requiere administrador.
+2. Colócalo donde quieras (p. ej. `C:\Herramientas\` o una memoria USB) y ejecútalo. Acepta el aviso UAC: cambiar la IP requiere administrador. Si lo vuelves a abrir mientras está en marcha, solo se trae al frente, sin otro aviso.
 3. En **Inicio**, pulsa **Guardar como perfil** en un adaptador, o crea uno en **Perfiles → Añadir perfil**.
 
 > [!TIP]
@@ -110,6 +110,10 @@ IPSwitch.exe [opciones]
 
 `--apply` sirve para scripts y el Programador de tareas. Si IP Switch ya está abierto, la orden se le reenvía y se devuelve su código de salida. *Crear acceso directo en el escritorio* (menú ⋯ de un perfil) crea un acceso que ejecuta `--apply` para ese perfil.
 
+### Actualizaciones
+
+Con *Buscar actualizaciones* activado, IP Switch te avisa cuando hay una versión nueva. En *Ajustes → Acerca de → Comprobar ahora*, **Actualizar ahora** descarga el nuevo `IPSwitch.exe` de GitHub, comprueba su SHA-256, sustituye el ejecutable y se reinicia; tus perfiles y ajustes siguen en `%AppData%\IPSwitch`. Si algo falla, sigue funcionando la versión actual sin cambios.
+
 ### Ajustes
 
 | Sección | Opciones |
@@ -118,7 +122,7 @@ IPSwitch.exe [opciones]
 | Página de perfiles | Columnas visibles |
 | Comprobación de conexión | Activar, host a comprobar (vacío = puerta de enlace), tiempo antes de revertir |
 | Sistema y comportamiento | Iniciar con Windows, clic en la bandeja, cerrar al área de notificación, confirmar al salir |
-| Acerca de | Actualizaciones, carpeta de datos, **informar de un error o proponer una mejora** |
+| Acerca de | Actualizaciones (aviso al iniciar y **actualización en un clic**), carpeta de datos, **informar de un error o proponer una mejora** |
 
 ## Datos y privacidad
 
@@ -129,7 +133,7 @@ IPSwitch.exe [opciones]
 
 - Los datos **nunca** se guardan junto al ejecutable. Los de versiones portables anteriores (`IPSwitch-data` junto al `.exe`) se copian la primera vez.
 - La variable de entorno `IPSWITCH_DATA_DIR` cambia la carpeta (uso totalmente portable, pruebas).
-- IP Switch no recopila nada. La comprobación de actualizaciones es opcional y nunca descarga ni instala por sí sola. *Informar de un error* abre GitHub en tu navegador; no se envía nada automáticamente.
+- IP Switch no recopila nada. La comprobación de actualizaciones es opcional; solo se descarga una versión nueva al pulsar *Actualizar ahora*, y solo se instala si su SHA-256 coincide con el publicado. *Informar de un error* abre GitHub en tu navegador; no se envía nada automáticamente.
 
 ## Compilar desde el código
 
@@ -150,7 +154,7 @@ Más detalles (estructura, pruebas, CI) en el [README en inglés](README.md#buil
 | «No se pudo aplicar…» con un mensaje de `netsh` | Es el mensaje de Windows. Revisa que la IP no esté repetida y que el adaptador esté habilitado. |
 | Se revierte aunque la red funciona | La puerta de enlace no responde a ping. Indica otro host en *Ajustes → Host a comprobar* o desactiva la comprobación. |
 | Un atajo no funciona | Otra aplicación lo usa (verás un aviso). Elige otro. |
-| No arranca con Windows tras mover el `.exe` | Desactiva y vuelve a activar *Iniciar con Windows*. |
+| No arranca con Windows tras mover el `.exe` | Ábrelo una vez desde la nueva ubicación: la tarea de inicio se actualiza sola. |
 | No aparece un adaptador | Puede estar oculto o ser un adaptador virtual excluido. |
 | Al abrirlo no pasa nada | Ya está en ejecución: busca su icono en el área de notificación. |
 

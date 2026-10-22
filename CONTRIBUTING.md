@@ -29,7 +29,7 @@ dotnet test tests/IPSwitch.Tests/IPSwitch.Tests.csproj -c Release
 Try the UI without UAC and with throwaway data (network changes will fail):
 
 ```powershell
-$env:__COMPAT_LAYER = 'RunAsInvoker'; $env:IPSWITCH_DATA_DIR = "$env:TEMP\ipswitch-dev"; .\artifacts\IPSwitch.exe
+$env:IPSWITCH_NO_ELEVATION = '1'; $env:IPSWITCH_DATA_DIR = "$env:TEMP\ipswitch-dev"; .\artifacts\IPSwitch.exe
 ```
 
 ## Guidelines

@@ -8,10 +8,9 @@
         d:DataContext="{d:DesignInstance viewmodels:AddEditWindowViewModel, IsDesignTimeCreatable=False}"
         mc:Ignorable="d"
         Title="{DynamicResource Edit_Title}"
-        Width="440"
-        MinWidth="360"
+        Width="780"
+        MinWidth="600"
         MinHeight="360"
-        MaxHeight="900"
         SizeToContent="Height"
         ResizeMode="CanResize"
         ShowInTaskbar="False"
@@ -23,8 +22,9 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica">
     <!--
-        Profile editor: basic data (name, adapter, IP/DHCP, DNS, color, notes) and the
-        "Advanced" section (additional IPs, metric, hotkey and, on WiFi adapters only, automatic apply per network).
+        Profile editor, laid out horizontally so it fits small screens: name and adapter on top, addressing (IP/DHCP,
+        mask, gateway, DNS) on the left, color and notes on the right, and the "Advanced" section below in two columns
+        (additional IPs and gateways | metric, hotkey and, on WiFi adapters only, automatic apply per network).
         Validation errors are shown as a red border + tooltip.
     -->
 
@@ -102,177 +102,222 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="24,8,24,20">
-                <TextBlock Text="{DynamicResource Edit_Name}" Style="{StaticResource FieldLabel}"/>
-                <ui:TextBox x:Name="NameBox" PlaceholderText="{DynamicResource Edit_NamePlaceholder}" Margin="0,0,0,12"
-                            Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-
-                <TextBlock Text="{DynamicResource Edit_Interface}" Style="{StaticResource FieldLabel}"/>
-                <ComboBox Margin="0,0,0,12" HorizontalAlignment="Stretch"
-                          ItemsSource="{Binding NetworkInterfaces}"
-                          SelectedItem="{Binding SelectedInterface}" />
-
-                <CheckBox Content="{DynamicResource Edit_Dhcp}" Margin="0,0,0,12"
-                          IsChecked="{Binding IsDhcp}" />
-
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDhcp}" Value="True">
-                                    <Setter Property="IsEnabled" Value="False" />
-                                    <Setter Property="Opacity" Value="0.5" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-
-                    <TextBlock Text="{DynamicResource Edit_IP}" Style="{StaticResource FieldLabel}"/>
-                    <ui:TextBox PlaceholderText="192.168.1.10" Margin="0,0,0,8"
-                                Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged}" />
-
-                    <TextBlock Text="{DynamicResource Edit_Mask}" Style="{StaticResource FieldLabel}"/>
-                    <ComboBox Margin="0,0,0,8" HorizontalAlignment="Stretch"
-                              ItemsSource="{Binding SubnetMasks}"
-                              SelectedItem="{Binding SelectedMask}" />
-
-                    <TextBlock Text="{DynamicResource Edit_Gateway}" Style="{StaticResource FieldLabel}"/>
-                    <ui:TextBox PlaceholderText="192.168.1.1" Margin="0,0,0,12"
-                                Text="{Binding Gateway, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
-
-                <TextBlock Text="{DynamicResource Edit_Dns}" Style="{StaticResource FieldLabel}"
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                <Grid Margin="0,0,0,12">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ui:TextBox PlaceholderText="{DynamicResource Edit_Dns1}" Margin="0,0,4,0" Grid.Column="0"
-                                Text="{Binding Dns1, UpdateSourceTrigger=PropertyChanged}"/>
-                    <ui:TextBox PlaceholderText="{DynamicResource Edit_Dns2}" Margin="4,0,0,0" Grid.Column="1"
-                                Text="{Binding Dns2, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top row: name and adapter -->
+                    <StackPanel Grid.Row="0" Grid.Column="0">
+                        <TextBlock Text="{DynamicResource Edit_Name}" Style="{StaticResource FieldLabel}"/>
+                        <ui:TextBox x:Name="NameBox" PlaceholderText="{DynamicResource Edit_NamePlaceholder}" Margin="0,0,0,12"
+                                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock Text="{DynamicResource Edit_Interface}" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox Margin="0,0,0,12" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding NetworkInterfaces}"
+                                  SelectedItem="{Binding SelectedInterface}" />
+                    </StackPanel>
+
+                    <!-- Left: addressing -->
+                    <StackPanel Grid.Row="1" Grid.Column="0">
+                        <CheckBox Content="{DynamicResource Edit_Dhcp}" Margin="0,0,0,12"
+                                  IsChecked="{Binding IsDhcp}" />
+
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDhcp}" Value="True">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock Text="{DynamicResource Edit_IP}" Style="{StaticResource FieldLabel}"/>
+                            <ui:TextBox PlaceholderText="192.168.1.10" Margin="0,0,0,8"
+                                        Text="{Binding IpAddress, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource Edit_Mask}" Style="{StaticResource FieldLabel}"/>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding SubnetMasks}"
+                                              SelectedItem="{Binding SelectedMask}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="{DynamicResource Edit_Gateway}" Style="{StaticResource FieldLabel}"/>
+                                    <ui:TextBox PlaceholderText="192.168.1.1"
+                                                Text="{Binding Gateway, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <TextBlock Text="{DynamicResource Edit_Dns}" Style="{StaticResource FieldLabel}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:TextBox PlaceholderText="{DynamicResource Edit_Dns1}" Grid.Column="0"
+                                        Text="{Binding Dns1, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ui:TextBox PlaceholderText="{DynamicResource Edit_Dns2}" Grid.Column="2"
+                                        Text="{Binding Dns2, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Right: color and notes (the notes box fills the height of the left column) -->
+                    <DockPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource Edit_Color}" Style="{StaticResource FieldLabel}"/>
+                        <ListBox DockPanel.Dock="Top" ItemsSource="{Binding ColorPalette}" SelectedItem="{Binding SelectedColor}"
+                                 Margin="0,0,0,12" Background="Transparent" BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="3" />
+                                    <Setter Property="Margin" Value="0,0,4,0" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Ring" CornerRadius="14" BorderThickness="2" BorderBrush="Transparent"
+                                                        Padding="{TemplateBinding Padding}" Background="Transparent">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Ring" Property="BorderBrush"
+                                                                Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Width="20" Height="20">
+                                        <Ellipse Fill="{Binding Converter={StaticResource ColorBrush}}"
+                                                 Stroke="{DynamicResource TextFillColorSecondaryBrush}" StrokeThickness="1" />
+                                        <!-- No color: crossed-out circle -->
+                                        <Line X1="4" Y1="16" X2="16" Y2="4" StrokeThickness="1.5"
+                                              Stroke="{DynamicResource TextFillColorSecondaryBrush}">
+                                            <Line.Style>
+                                                <Style TargetType="Line">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Line.Style>
+                                        </Line>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource Edit_Notes}" Style="{StaticResource FieldLabel}"/>
+                        <ui:TextBox AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64"
+                                    VerticalAlignment="Stretch" VerticalContentAlignment="Top"
+                                    PlaceholderText="{DynamicResource Edit_NotesPlaceholder}"
+                                    Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
                 </Grid>
 
-                <!-- Label color -->
-                <TextBlock Text="{DynamicResource Edit_Color}" Style="{StaticResource FieldLabel}"/>
-                <ListBox ItemsSource="{Binding ColorPalette}" SelectedItem="{Binding SelectedColor}"
-                         Margin="0,0,0,12" Background="Transparent" BorderThickness="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Padding" Value="3" />
-                            <Setter Property="Margin" Value="0,0,4,0" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="Ring" CornerRadius="14" BorderThickness="2" BorderBrush="Transparent"
-                                                Padding="{TemplateBinding Padding}" Background="Transparent">
-                                            <ContentPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Ring" Property="BorderBrush"
-                                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Width="20" Height="20">
-                                <Ellipse Fill="{Binding Converter={StaticResource ColorBrush}}"
-                                         Stroke="{DynamicResource TextFillColorSecondaryBrush}" StrokeThickness="1" />
-                                <!-- No color: crossed-out circle -->
-                                <Line X1="4" Y1="16" X2="16" Y2="4" StrokeThickness="1.5"
-                                      Stroke="{DynamicResource TextFillColorSecondaryBrush}">
-                                    <Line.Style>
-                                        <Style TargetType="Line">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Line.Style>
-                                </Line>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-                <TextBlock Text="{DynamicResource Edit_Notes}" Style="{StaticResource FieldLabel}"/>
-                <ui:TextBox Margin="0,0,0,12" AcceptsReturn="True" TextWrapping="Wrap" MinLines="2" MaxLines="4"
-                            PlaceholderText="{DynamicResource Edit_NotesPlaceholder}"
-                            Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
-
-                <!-- Advanced options -->
-                <Expander x:Name="AdvancedExpander" Margin="0,0,0,4">
+                <!-- Advanced options, in two columns -->
+                <Expander x:Name="AdvancedExpander" Margin="0,4,0,4">
                     <Expander.Header>
                         <TextBlock Text="{DynamicResource Edit_Advanced}" FontSize="14" FontWeight="SemiBold" />
                     </Expander.Header>
-                    <StackPanel Margin="4,12,4,0">
-                        <StackPanel Style="{StaticResource AdvancedGroup}">
-                            <TextBlock Text="{DynamicResource Edit_Secondary}" Style="{StaticResource AdvancedLabel}"/>
-                            <ui:TextBox AcceptsReturn="True" TextWrapping="NoWrap" MinLines="2" MaxLines="5"
-                                        PlaceholderText="10.0.0.5/24"
-                                        Text="{Binding SecondaryAddressesText, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="{DynamicResource Edit_SecondaryHint}" Style="{StaticResource HintText}"/>
+                    <Grid Margin="4,12,4,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <StackPanel Style="{StaticResource AdvancedGroup}">
+                                <TextBlock Text="{DynamicResource Edit_Secondary}" Style="{StaticResource AdvancedLabel}"/>
+                                <ui:TextBox AcceptsReturn="True" TextWrapping="NoWrap" MinLines="2" MaxLines="5"
+                                            PlaceholderText="10.0.0.5/24"
+                                            Text="{Binding SecondaryAddressesText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="{DynamicResource Edit_SecondaryHint}" Style="{StaticResource HintText}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource AdvancedGroup}">
+                                <TextBlock Text="{DynamicResource Edit_Gateways}" Style="{StaticResource AdvancedLabel}"/>
+                                <ui:TextBox AcceptsReturn="True" TextWrapping="NoWrap" MinLines="2" MaxLines="5"
+                                            PlaceholderText="10.0.0.254 20"
+                                            Text="{Binding AdditionalGatewaysText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="{DynamicResource Edit_GatewaysHint}" Style="{StaticResource HintText}"/>
+                            </StackPanel>
                         </StackPanel>
 
-                        <Separator Margin="0,0,0,16" Opacity="0.3"/>
+                        <StackPanel Grid.Column="2">
+                            <StackPanel Style="{StaticResource AdvancedGroup}">
+                                <TextBlock Text="{DynamicResource Edit_Metric}" Style="{StaticResource AdvancedLabel}"/>
+                                <ui:TextBox Text="{Binding GatewayMetricText, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="{DynamicResource Edit_MetricHint}" Style="{StaticResource HintText}"/>
+                            </StackPanel>
 
-                        <StackPanel Style="{StaticResource AdvancedGroup}">
-                            <TextBlock Text="{DynamicResource Edit_Metric}" Style="{StaticResource AdvancedLabel}"/>
-                            <ui:TextBox Text="{Binding GatewayMetricText, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="{DynamicResource Edit_MetricHint}" Style="{StaticResource HintText}"/>
+                            <StackPanel Style="{StaticResource AdvancedGroup}">
+                                <TextBlock Text="{DynamicResource Edit_Hotkey}" Style="{StaticResource AdvancedLabel}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False"
+                                                PlaceholderText="{DynamicResource Edit_HotkeyPlaceholder}"
+                                                Text="{Binding Hotkey, Mode=OneWay, ValidatesOnNotifyDataErrors=True}"
+                                                PreviewKeyDown="OnHotkeyPreviewKeyDown" />
+                                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Icon="{ui:SymbolIcon Dismiss24}"
+                                               Appearance="Secondary" Click="OnClearHotkeyClick" />
+                                </Grid>
+                                <TextBlock Text="{DynamicResource Edit_HotkeyHint}" Style="{StaticResource HintText}"/>
+                            </StackPanel>
+
+                            <!-- WiFi adapters only -->
+                            <StackPanel Style="{StaticResource AdvancedGroup}"
+                                        Visibility="{Binding IsWifiInterface, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="{DynamicResource Edit_Ssid}" Style="{StaticResource AdvancedLabel}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:TextBox PlaceholderText="{DynamicResource Edit_SsidPlaceholder}"
+                                                Text="{Binding AutoApplySsid, UpdateSourceTrigger=PropertyChanged}" />
+                                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Content="{DynamicResource Edit_SsidCurrent}"
+                                               Appearance="Secondary" Click="OnUseCurrentSsidClick" />
+                                </Grid>
+                                <TextBlock x:Name="SsidHint" Text="{DynamicResource Edit_SsidHint}" Style="{StaticResource HintText}"/>
+                            </StackPanel>
                         </StackPanel>
-
-                        <Separator Margin="0,0,0,16" Opacity="0.3"/>
-
-                        <StackPanel Style="{StaticResource AdvancedGroup}">
-                        <TextBlock Text="{DynamicResource Edit_Hotkey}" Style="{StaticResource AdvancedLabel}"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:TextBox IsReadOnly="True" IsReadOnlyCaretVisible="False"
-                                        PlaceholderText="{DynamicResource Edit_HotkeyPlaceholder}"
-                                        Text="{Binding Hotkey, Mode=OneWay, ValidatesOnNotifyDataErrors=True}"
-                                        PreviewKeyDown="OnHotkeyPreviewKeyDown" />
-                            <ui:Button Grid.Column="1" Margin="4,0,0,0" Icon="{ui:SymbolIcon Dismiss24}"
-                                       Appearance="Secondary" Click="OnClearHotkeyClick" />
-                        </Grid>
-                        <TextBlock Text="{DynamicResource Edit_HotkeyHint}" Style="{StaticResource HintText}"/>
-                        </StackPanel>
-
-                        <!-- WiFi adapters only -->
-                        <StackPanel Style="{StaticResource AdvancedGroup}"
-                                    Visibility="{Binding IsWifiInterface, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Separator Margin="0,0,0,16" Opacity="0.3"/>
-                        <TextBlock Text="{DynamicResource Edit_Ssid}" Style="{StaticResource AdvancedLabel}"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:TextBox PlaceholderText="{DynamicResource Edit_SsidPlaceholder}"
-                                        Text="{Binding AutoApplySsid, UpdateSourceTrigger=PropertyChanged}" />
-                            <ui:Button Grid.Column="1" Margin="4,0,0,0" Content="{DynamicResource Edit_SsidCurrent}"
-                                       Appearance="Secondary" Click="OnUseCurrentSsidClick" />
-                        </Grid>
-                        <TextBlock x:Name="SsidHint" Text="{DynamicResource Edit_SsidHint}" Style="{StaticResource HintText}"/>
-                        </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Expander>
             </StackPanel>
         </ScrollViewer>

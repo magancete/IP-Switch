@@ -48,6 +48,12 @@ namespace IPSwitch.Models
         /// <summary>Additional IPv4 addresses in canonical <c>ip/prefix</c> form. Static IP only.</summary>
         [ObservableProperty] private List<string> _secondaryAddresses = new();
 
+        /// <summary>
+        /// Additional default gateways, as in the Windows advanced TCP/IP settings: <c>ip</c> or <c>ip metric</c>
+        /// (see <see cref="IpUtils.TryParseGateway"/>). Static IP only.
+        /// </summary>
+        [ObservableProperty] private List<string> _additionalGateways = new();
+
         /// <summary>Gateway metric (1–9999). Lower values take priority.</summary>
         [ObservableProperty] private int _gatewayMetric = 1;
 
@@ -96,9 +102,11 @@ namespace IPSwitch.Models
             if (string.IsNullOrWhiteSpace(Interface)) return "Val_InterfaceRequired";
 
             var secondary = SecondaryAddresses ?? new List<string>();
+            var gateways = AdditionalGateways ?? new List<string>();
             if (IsDhcp)
             {
                 if (secondary.Count > 0) return "Val_SecondaryDhcp";
+                if (gateways.Count > 0) return "Val_GatewaysDhcp";
             }
             else
             {
@@ -106,6 +114,7 @@ namespace IPSwitch.Models
                 if (!IpUtils.IsValidMask(SubnetMask)) return "Val_MaskInvalid";
                 if (NetworkService.IsSet(Gateway) && !IpUtils.IsValidIPv4(Gateway)) return "Val_IpInvalid";
                 if (secondary.Any(a => !IpUtils.TryParseAddressWithMask(a, out _, out _))) return "Val_SecondaryInvalid";
+                if (gateways.Any(g => !IpUtils.TryParseGateway(g, out _, out _))) return "Val_GatewaysInvalid";
             }
 
             if (NetworkService.IsSet(PrimaryDNS) && !IpUtils.IsValidIPv4(PrimaryDNS)) return "Val_IpInvalid";
@@ -131,6 +140,7 @@ namespace IPSwitch.Models
             SecondaryDNS = SecondaryDNS,
             Interface = Interface,
             SecondaryAddresses = new List<string>(SecondaryAddresses ?? new List<string>()),
+            AdditionalGateways = new List<string>(AdditionalGateways ?? new List<string>()),
             GatewayMetric = GatewayMetric,
             Notes = Notes,
             Color = Color,

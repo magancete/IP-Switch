@@ -11,7 +11,7 @@
       - Connectivity check (unreachable / reachable host).
       - Automatic rollback when there is no connectivity (ProfileApplier).
       - Disabling, listing as disabled, enabling and restarting the adapter.
-      - Startup scheduled task (only if the user does not already have one).
+      - Startup scheduled task: elevated, no time limit, battery-proof (only if the user does not already have one).
       - Command line: --apply with exit codes 0 / 2.
       - Global hotkey registration and WLAN query.
 
@@ -126,6 +126,23 @@ try {
                  ($captured.SecondaryAddresses -contains '192.168.251.10/24') -and $captured.PrimaryDNS -eq '1.1.1.1' -and $captured.SecondaryDNS -eq '9.9.9.9'
     Write-Result $okCapture 'CaptureCurrentConfig (static)' ("{0} {1} sec={2} dns={3},{4}" -f $captured.IPAddress, $captured.SubnetMask, ($captured.SecondaryAddresses -join ';'), $captured.PrimaryDNS, $captured.SecondaryDNS)
 
+    # 2b. Additional gateways (as in the Windows advanced TCP/IP settings)
+    $gw = New-Profile 'IT-Gateways' '192.168.250.10' '255.255.255.0' '192.168.250.1'
+    $gw.GatewayMetric = 5
+    $gwList = New-Object 'System.Collections.Generic.List[string]'
+    $gwList.Add('192.168.250.2 30'); $gwList.Add('192.168.250.3')
+    $gw.AdditionalGateways = $gwList
+    Write-Result $gw.IsValid 'Gateways profile is valid'
+    $r = [IPSwitch.Services.NetworkService]::ApplyProfile($gw).GetAwaiter().GetResult()
+    Write-Result $r.Success 'ApplyProfile with additional gateways' $r.Message
+    $hops = { @(Get-NetRoute -InterfaceAlias $Adapter -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | ForEach-Object { $_.NextHop }) }
+    $ok = Wait-Until { $h = & $hops; $h -contains '192.168.250.1' -and $h -contains '192.168.250.2' -and $h -contains '192.168.250.3' }
+    Write-Result $ok 'Gateways: three default routes' ((& $hops) -join ', ')
+    $captured = [IPSwitch.Services.NetworkService]::CaptureCurrentConfig($Adapter)
+    $okCapture = $captured.Gateway -eq '192.168.250.1' -and $captured.GatewayMetric -eq 5 -and
+                 ($captured.AdditionalGateways -contains '192.168.250.2 30') -and ($captured.AdditionalGateways -contains '192.168.250.3 5')
+    Write-Result $okCapture 'CaptureCurrentConfig (gateways)' ("gw={0} metric={1} extra={2}" -f $captured.Gateway, $captured.GatewayMetric, ($captured.AdditionalGateways -join ';'))
+
     # 3. Back to DHCP
     $r = [IPSwitch.Services.NetworkService]::ApplyProfile($dhcpProfile).GetAwaiter().GetResult()
     Write-Result $r.Success 'ApplyProfile DHCP' $r.Message
@@ -168,12 +185,19 @@ try {
     if ([IPSwitch.Services.StartupService]::IsEnabled()) {
         Write-Result $true 'Startup task' 'SKIPPED: an IPSwitch task already exists'
     } else {
-        Write-Result ([IPSwitch.Services.StartupService]::SetEnabled($true)) 'Startup task created'
+        $r = [IPSwitch.Services.StartupService]::SetEnabled($true)
+        Write-Result $r.Success 'Startup task created' $r.Message
         $xml = [xml](schtasks /Query /TN IPSwitch /XML | Out-String)
         $runLevel = $xml.Task.Principals.Principal.RunLevel
         $arguments = $xml.Task.Actions.Exec.Arguments
         Write-Result ($runLevel -eq 'HighestAvailable' -and $arguments -match '--minimized') 'Startup task: elevated, --minimized' "$runLevel $arguments"
-        Write-Result ([IPSwitch.Services.StartupService]::SetEnabled($false) -and -not [IPSwitch.Services.StartupService]::IsEnabled()) 'Startup task removed'
+        $settings = $xml.Task.Settings
+        $ok = $settings.ExecutionTimeLimit -eq 'PT0S' -and $settings.DisallowStartIfOnBatteries -eq 'false' -and
+              $settings.StopIfGoingOnBatteries -eq 'false' -and $xml.Task.Triggers.LogonTrigger.Enabled -eq 'true'
+        Write-Result $ok 'Startup task: no time limit, runs on battery, logon trigger' ("limit={0} battery={1}" -f $settings.ExecutionTimeLimit, $settings.DisallowStartIfOnBatteries)
+        Write-Result ([IPSwitch.Services.StartupService]::GetTaskExecutable() -eq [IPSwitch.Services.AppPaths]::ExecutablePath) 'Startup task: points to this executable'
+        $r = [IPSwitch.Services.StartupService]::SetEnabled($false)
+        Write-Result ($r.Success -and -not [IPSwitch.Services.StartupService]::IsEnabled()) 'Startup task removed' $r.Message
     }
 
     # 8. Command line

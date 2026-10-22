@@ -59,6 +59,12 @@ namespace IPSwitch.Models
         /// </summary>
         public bool TrayClickOpensFlyout { get; set; } = true;
 
+        /// <summary>
+        /// Starts the application (minimized) when the user signs in. The scheduled task is kept in sync with this
+        /// value at every start (<see cref="Services.StartupService.Synchronize"/>), so it survives moving the executable.
+        /// </summary>
+        public bool StartWithWindows { get; set; } = false;
+
         #endregion
 
         #region Compact view
@@ -80,6 +86,21 @@ namespace IPSwitch.Models
 
         /// <summary>Saved height of the compact view, or <see langword="null"/> to fit its content.</summary>
         public double? CompactHeight { get; set; }
+
+        /// <summary>Last position and size of the main window (<see langword="null"/> = fit the screen).</summary>
+        public double? MainLeft { get; set; }
+
+        /// <inheritdoc cref="MainLeft"/>
+        public double? MainTop { get; set; }
+
+        /// <inheritdoc cref="MainLeft"/>
+        public double? MainWidth { get; set; }
+
+        /// <inheritdoc cref="MainLeft"/>
+        public double? MainHeight { get; set; }
+
+        /// <summary>Whether the main window was maximized when last closed.</summary>
+        public bool MainMaximized { get; set; }
 
         #endregion
 
@@ -106,6 +127,9 @@ namespace IPSwitch.Models
 
         /// <summary>Checks GitHub for a newer version at startup.</summary>
         public bool CheckForUpdates { get; set; } = true;
+
+        /// <summary>Version that ran last time; when it changes, the app tells the user it was updated.</summary>
+        public string LastRunVersion { get; set; } = string.Empty;
 
         #endregion
 

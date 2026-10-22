@@ -99,6 +99,7 @@
     <sys:String x:Key="Col_Interface">Interface</sys:String>
     <sys:String x:Key="Col_Actions">Actions</sys:String>
     <sys:String x:Key="Tip_Active">Active profile</sys:String>
+    <sys:String x:Key="Profiles_ActiveBadge">Active</sys:String>
     <sys:String x:Key="Tip_Apply">Apply profile</sys:String>
     <sys:String x:Key="Tip_Edit">Edit profile</sys:String>
     <sys:String x:Key="Delete_Title">Delete profile</sys:String>
@@ -145,6 +146,8 @@
     <sys:String x:Key="Edit_Advanced">Advanced</sys:String>
     <sys:String x:Key="Edit_Secondary">Additional IP addresses</sys:String>
     <sys:String x:Key="Edit_SecondaryHint">One per line: 10.0.0.5/24 or 10.0.0.5 255.255.255.0. Static IP only.</sys:String>
+    <sys:String x:Key="Edit_Gateways">Additional gateways</sys:String>
+    <sys:String x:Key="Edit_GatewaysHint">One per line, optionally with its metric: 10.0.0.254 or 10.0.0.254 20. Without a metric, the gateway metric is used. Static IP only.</sys:String>
     <sys:String x:Key="Edit_Metric">Gateway metric</sys:String>
     <sys:String x:Key="Edit_MetricHint">1–9999. Lower values take priority over other adapters.</sys:String>
     <sys:String x:Key="Edit_Hotkey">Global hotkey</sys:String>
@@ -166,6 +169,8 @@
     <sys:String x:Key="Val_MaskInvalid">Invalid subnet mask.</sys:String>
     <sys:String x:Key="Val_SecondaryInvalid">Each line must be an address with mask (10.0.0.5/24).</sys:String>
     <sys:String x:Key="Val_SecondaryDhcp">Additional addresses require a static IP.</sys:String>
+    <sys:String x:Key="Val_GatewaysInvalid">Each line must be a gateway address, optionally followed by its metric (10.0.0.254 20).</sys:String>
+    <sys:String x:Key="Val_GatewaysDhcp">Additional gateways require a static IP.</sys:String>
     <sys:String x:Key="Val_MetricInvalid">The metric must be a number between 1 and 9999.</sys:String>
     <sys:String x:Key="Val_HotkeyInvalid">Invalid hotkey. Use at least one modifier (Ctrl, Alt, Shift, Win).</sys:String>
     <sys:String x:Key="Val_HotkeyDuplicate">Another profile already uses this hotkey.</sys:String>
@@ -220,4 +225,12 @@
     <sys:String x:Key="Update_Available">Version {0} is available.</sys:String>
     <sys:String x:Key="Update_UpToDate">You are using the latest version.</sys:String>
     <sys:String x:Key="Update_Open">Open download page</sys:String>
+    <sys:String x:Key="Update_AvailableInstall">Version {0} is available. Install it from Settings › About.</sys:String>
+    <sys:String x:Key="Update_Confirm">Version {0} is available. IP Switch will download it, verify it and restart.</sys:String>
+    <sys:String x:Key="Update_Install">Update now</sys:String>
+    <sys:String x:Key="Update_Downloading">Downloading version {0}…</sys:String>
+    <sys:String x:Key="Update_Failed">Could not update: {0}</sys:String>
+    <sys:String x:Key="Update_ChecksumMismatch">The download is damaged (its SHA-256 does not match). Nothing was changed.</sys:String>
+    <sys:String x:Key="Update_NoAsset">This release cannot be installed from the app; download it from GitHub.</sys:String>
+    <sys:String x:Key="Update_Done">IP Switch was updated to version {0}.</sys:String>
 </ResourceDictionary>

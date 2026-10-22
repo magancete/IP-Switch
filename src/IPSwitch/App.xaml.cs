@@ -14,6 +14,10 @@ namespace IPSwitch
     /// <list type="bullet">
     /// <item><description>Parses the command line (<see cref="CommandLineOptions"/>).</description></item>
     /// <item><description>
+    /// Starts without administrator rights (<see cref="Elevation"/>): if an instance is already running it gets the
+    /// request without a UAC prompt; otherwise the app restarts itself elevated.
+    /// </description></item>
+    /// <item><description>
     /// Guarantees a single process on the machine (<see cref="SingleInstance"/>): a later launch asks the running
     /// instance to show itself or to apply a profile (<c>--apply</c>) and exits with its result.
     /// </description></item>
@@ -48,6 +52,13 @@ namespace IPSwitch
                 return;
             }
 
+            if (!Elevation.IsElevated && !Elevation.IsSkipped)
+            {
+                // Unelevated launch: hand the request to the running instance, or restart elevated
+                Shutdown(await StartUnelevatedAsync(options, e.Args));
+                return;
+            }
+
             _instance = SingleInstance.TryAcquire();
             if (_instance == null)
             {
@@ -62,6 +73,7 @@ namespace IPSwitch
                 return;
             }
 
+            SelfUpdater.CleanUpPreviousVersion();
             ApplyTheme(Settings.SelectedTheme);
 
             var window = new MainWindow();
@@ -75,6 +87,16 @@ namespace IPSwitch
                 window.EnterCompactMode();
             else
                 window.Show();
+        }
+
+        /// <summary>
+        /// Gives up being the running instance (mutex and command pipe) so a new process can take over right away:
+        /// used to restart after an update. Must be called on the UI thread, which owns the mutex.
+        /// </summary>
+        public void ReleaseInstance()
+        {
+            _instance?.Dispose();
+            _instance = null;
         }
 
         /// <inheritdoc />
@@ -118,6 +140,30 @@ namespace IPSwitch
         }
 
         /// <summary>
+        /// Unelevated launch. A running instance (always elevated) shows itself or applies the profile, with no UAC
+        /// prompt. If none is running, the executable restarts elevated; for <c>--apply</c> this process waits and
+        /// returns the elevated run's exit code.
+        /// </summary>
+        /// <returns>The process exit code.</returns>
+        private static async Task<int> StartUnelevatedAsync(CommandLineOptions options, string[] args)
+        {
+            string command = options.ApplyProfileName == null
+                ? SingleInstance.ShowCommand
+                : SingleInstance.BuildApplyCommand(options.ApplyProfileName);
+
+            string? reply = await SingleInstance.SendAsync(command, ForwardedApplyTimeout);
+            if (reply != null)
+                return int.TryParse(reply, out int forwardedExitCode) ? forwardedExitCode : CommandLineOptions.ExitError;
+
+            using var elevated = Elevation.RestartElevated(args);
+            if (elevated == null) return CommandLineOptions.ExitError;   // UAC prompt cancelled
+            if (options.ApplyProfileName == null) return CommandLineOptions.ExitSuccess;
+
+            await Task.Run(elevated.WaitForExit);
+            return elevated.ExitCode;
+        }
+
+        /// <summary>
         /// Sends the request of this launch to the running instance: apply a profile, or just show its window.
         /// </summary>
         /// <returns>The process exit code.</returns>
@@ -125,12 +171,12 @@ namespace IPSwitch
         {
             if (options.ApplyProfileName == null)
             {
-                await SingleInstance.SendAsync(SingleInstance.ShowCommand, TimeSpan.FromSeconds(5));
+                await SingleInstance.SendAsync(SingleInstance.ShowCommand, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
                 return CommandLineOptions.ExitSuccess;
             }
 
             string? reply = await SingleInstance.SendAsync(
-                SingleInstance.BuildApplyCommand(options.ApplyProfileName), ForwardedApplyTimeout);
+                SingleInstance.BuildApplyCommand(options.ApplyProfileName), ForwardedApplyTimeout, TimeSpan.FromSeconds(5));
 
             return int.TryParse(reply, out int exitCode) ? exitCode : CommandLineOptions.ExitError;
         }

@@ -46,7 +46,7 @@ Changing a static IP in Windows means digging through *Control Panel → Network
 
 **Profiles**
 - Static IP or DHCP, mask, gateway with metric, primary/secondary DNS
-- Additional IP addresses on the same adapter
+- Additional IP addresses and additional gateways (with metrics) on the same adapter
 - Color label, notes, duplicate, search and sort
 - Active profile detection
 - Import/export as JSON
@@ -93,15 +93,15 @@ Changing a static IP in Windows means digging through *Control Panel → Network
 <td align="center"><img src="docs/images/compact.png" alt="Compact view" width="260"><br><sub><b>Compact view</b> — one button per profile</sub></td>
 </tr>
 <tr>
-<td align="center"><img src="docs/images/settings.png" alt="Settings page" width="520"><br><sub><b>Settings</b></sub></td>
-<td align="center"><img src="docs/images/editor.png" alt="Profile editor" width="220"><br><sub><b>Profile editor</b></sub></td>
+<td align="center"><img src="docs/images/settings.png" alt="Settings page" width="420"><br><sub><b>Settings</b></sub></td>
+<td align="center"><img src="docs/images/editor.png" alt="Profile editor" width="380"><br><sub><b>Profile editor</b></sub></td>
 </tr>
 </table>
 
 ## Getting started
 
 1. Download [`IPSwitch.exe`](https://github.com/magancete/IP-Switch/releases/latest/download/IPSwitch.exe) from the latest release.
-2. Put it anywhere (e.g. `C:\Tools\` or a USB drive) and run it. Accept the UAC prompt: changing the IP configuration requires administrator rights.
+2. Put it anywhere (e.g. `C:\Tools\` or a USB drive) and run it. Accept the UAC prompt: changing the IP configuration requires administrator rights. Opening it again while it runs just brings it to the front, without another prompt.
 3. On **Home**, click **Save as profile** on an adapter, or create one in **Profiles → Add profile**.
 
 > [!TIP]
@@ -142,6 +142,10 @@ IPSwitch.exe [options]
 
 `--apply` works in scripts and Task Scheduler. If IP Switch is already running, the request is forwarded to it and the exit code is returned. *Create desktop shortcut* (⋯ menu of a profile) builds a shortcut that runs `--apply` for that profile.
 
+### Updates
+
+With *Check for updates* on, IP Switch tells you when a new release is published. In *Settings → About → Check now*, **Update now** downloads the new `IPSwitch.exe` from GitHub, verifies its SHA-256, replaces the executable in place and restarts — your profiles and settings stay in `%AppData%\IPSwitch`. If anything fails, the current version keeps running unchanged.
+
 ### Settings
 
 | Section | Options |
@@ -150,7 +154,7 @@ IPSwitch.exe [options]
 | Profiles page | Visible columns |
 | Connection check | On/off, host to check (empty = gateway), time before rolling back |
 | System & behavior | Start with Windows, tray click action, close to the notification area, confirm before exiting |
-| About | Updates, data folder, **report a bug or suggest an improvement** |
+| About | Updates (check at startup, **one-click update**), data folder, **report a bug or suggest an improvement** |
 
 ## Data and privacy
 
@@ -161,7 +165,7 @@ IPSwitch.exe [options]
 
 - Data is **never** stored next to the executable, so the `.exe` can be replaced or live in a read-only folder. Data from older portable builds (`IPSwitch-data` next to the `.exe`) is copied on first run.
 - The `IPSWITCH_DATA_DIR` environment variable overrides the folder (fully portable setups, tests).
-- IP Switch collects nothing. The optional update check queries `api.github.com` and never downloads or installs by itself. Feedback opens GitHub in your browser; nothing is sent automatically.
+- IP Switch collects nothing. The optional update check queries `api.github.com`; a new version is only downloaded when you click *Update now*, and it is installed only if its SHA-256 matches the one published with the release. Feedback opens GitHub in your browser; nothing is sent automatically.
 
 ## Building from source
 
@@ -176,7 +180,7 @@ cd IP-Switch
 Open `IPSwitch.slnx` in Visual Studio 2022 17.13+ to work in the IDE. To try the UI without UAC (network changes will fail) and with throwaway data:
 
 ```powershell
-$env:__COMPAT_LAYER = 'RunAsInvoker'; $env:IPSWITCH_DATA_DIR = "$env:TEMP\ipswitch-dev"; .\artifacts\IPSwitch.exe
+$env:IPSWITCH_NO_ELEVATION = '1'; $env:IPSWITCH_DATA_DIR = "$env:TEMP\ipswitch-dev"; .\artifacts\IPSwitch.exe
 ```
 
 ### Project layout
@@ -212,7 +216,7 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | "Could not apply…" with a `netsh` message | The message comes from Windows. Check that the IP is not used by another adapter and the adapter is enabled. |
 | It rolls back although the network works | The gateway does not answer ping. Set another host in *Settings → Host to check* or turn the check off. |
 | A hotkey does not work | Another application uses it (you will see a warning). Choose another one. |
-| It does not start with Windows after moving the `.exe` | Turn *Start with Windows* off and on again. |
+| It does not start with Windows after moving the `.exe` | Open it once from the new location: the startup task is updated automatically. |
 | An adapter is missing | It may be hidden (*Show hidden adapters*) or be an excluded virtual adapter. |
 | Nothing happens when launching it | It is already running: look for its icon in the notification area. |
 

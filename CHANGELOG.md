@@ -7,6 +7,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-22
+
+### Added
+
+- **One-click updates**: *Settings → About → Check now → Update now* downloads the new release, verifies its SHA-256 against the published `IPSwitch.exe.sha256`, swaps the executable in place and restarts. If anything fails, the running version is left untouched.
+- Additional default gateways per profile, each with an optional metric, as in the Windows advanced TCP/IP settings (*Advanced* section of the editor). "Save as profile" and the rollback snapshot keep them.
+
+### Changed
+
+- The profile editor is laid out horizontally (two columns) and never exceeds the screen work area.
+- The main window opens at a size that fits the screen (at most 90 % of the work area, 960 × 640 by default), can be made smaller (minimum 540 × 420) and remembers its last size, position and maximized state.
+- The active profile is marked with an "Active" badge (and a bold name) next to its name instead of a green check that overlapped the label color; the invalid-profile warning moved next to the name too.
+- On narrow windows the profiles table also hides the adapter and IP columns, and *Add profile* shows only its icon, so the action buttons always fit.
+
+### Fixed
+
+- Opening the `.exe` while the app was running in the tray asked for administrator rights again instead of bringing it to the front. The executable now starts unelevated: it hands the request to the running instance (no UAC prompt) and only restarts elevated when no instance is running. Desktop shortcuts (`--apply`) no longer prompt either while the app is running.
+- *Start with Windows* did not always start the app: the scheduled task now has no 72-hour limit, also starts on battery power, waits 10 seconds after sign-in, and is repaired automatically at every start if it is missing or points to an old copy of the executable. Errors when changing the option now show the Windows message.
+- The tray icon's right-click menu used the classic WinForms look: it is now a Fluent (Windows 11) menu with icons that follows the app theme.
+
 ## [1.0.0] - 2026-10-14
 
 Initial release.
@@ -22,5 +42,6 @@ Initial release.
 - Single instance, optional start with Windows, optional update check.
 - Data stored in `%AppData%\IPSwitch`.
 
-[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/magancete/IP-Switch/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/magancete/IP-Switch/releases/tag/v1.0.0

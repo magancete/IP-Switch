@@ -13,8 +13,8 @@ namespace IPSwitch.Pages
     /// </summary>
     /// <remarks>
     /// The page is cached by the navigation, so the controls are reloaded every time it is shown (some values can
-    /// change elsewhere, e.g. the pin button in the title bar). Querying or changing the startup task runs
-    /// <c>schtasks</c>, which is done on a background thread.
+    /// change elsewhere, e.g. the pin button in the title bar). The startup toggle shows the saved setting; changing
+    /// it runs <c>schtasks</c> on a background thread.
     /// </remarks>
     public partial class SettingsPage : Page
     {
@@ -27,10 +27,10 @@ namespace IPSwitch.Pages
         public SettingsPage()
         {
             InitializeComponent();
-            Loaded += async (_, _) => await LoadUiFromSettingsAsync();
+            Loaded += (_, _) => LoadUiFromSettings();
         }
 
-        private async Task LoadUiFromSettingsAsync()
+        private void LoadUiFromSettings()
         {
             _isLoading = true;
             try
@@ -47,6 +47,7 @@ namespace IPSwitch.Pages
                 ToggleCompactFade.IsChecked = _settings.CompactFadeWhenInactive;
                 ToggleVerify.IsChecked = _settings.VerifyConnectivity;
                 ToggleUpdates.IsChecked = _settings.CheckForUpdates;
+                ToggleStartup.IsChecked = _settings.StartWithWindows;
                 VerifyHostBox.Text = _settings.VerifyHost;
 
                 SelectByTag(ThemeComboBox, _settings.SelectedTheme);
@@ -62,10 +63,6 @@ namespace IPSwitch.Pages
             {
                 _isLoading = false;
             }
-
-            ToggleStartup.IsEnabled = false;
-            ToggleStartup.IsChecked = await Task.Run(StartupService.IsEnabled);
-            ToggleStartup.IsEnabled = true;
         }
 
         /// <summary>Selects the item whose <c>Tag</c> matches; if none does, the last one.</summary>
@@ -117,16 +114,25 @@ namespace IPSwitch.Pages
             _settings.Save();
         }
 
+        /// <summary>Registers or deletes the startup task; the setting is saved only if Windows accepted the change.</summary>
         private async void OnStartupToggled(object sender, RoutedEventArgs e)
         {
             bool requested = ToggleStartup.IsChecked == true;
             ToggleStartup.IsEnabled = false;
             try
             {
-                if (await Task.Run(() => StartupService.SetEnabled(requested))) return;
+                var result = await Task.Run(() => StartupService.SetEnabled(requested));
+                if (result.Success)
+                {
+                    _settings.StartWithWindows = requested;
+                    _settings.Save();
+                    return;
+                }
 
-                ToggleStartup.IsChecked = await Task.Run(StartupService.IsEnabled);
-                Main?.ShowNotification(Loc.Get("Notify_Error"), Loc.Get("Set_StartupFailed"), ControlAppearance.Danger);
+                _isLoading = true;
+                ToggleStartup.IsChecked = !requested;
+                _isLoading = false;
+                Main?.ShowNotification(Loc.Get("Set_StartupFailed"), result.Message, ControlAppearance.Danger);
             }
             finally
             {
@@ -142,8 +148,15 @@ namespace IPSwitch.Pages
             try
             {
                 var update = await Main.CheckForUpdatesAsync(silent: false);
-                if (update != null &&
-                    await Main.ConfirmAsync(Loc.Get("Update_Title"), Loc.Format("Update_Available", update.Version), Loc.Get("Update_Open")))
+                if (update == null) return;
+
+                if (update.CanInstall)
+                {
+                    // One click: download, verify, swap and restart
+                    if (await Main.ConfirmAsync(Loc.Get("Update_Title"), Loc.Format("Update_Confirm", update.Version), Loc.Get("Update_Install")))
+                        await Main.InstallUpdateAsync(update);
+                }
+                else if (await Main.ConfirmAsync(Loc.Get("Update_Title"), Loc.Format("Update_Available", update.Version), Loc.Get("Update_Open")))
                 {
                     Process.Start(new ProcessStartInfo(update.Url) { UseShellExecute = true });
                 }
