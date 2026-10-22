@@ -225,7 +225,10 @@
     <sys:String x:Key="Update_Available">Está disponible la versión {0}.</sys:String>
     <sys:String x:Key="Update_UpToDate">Ya tienes la última versión.</sys:String>
     <sys:String x:Key="Update_Open">Abrir página de descarga</sys:String>
-    <sys:String x:Key="Update_AvailableInstall">La versión {0} está disponible. Instálala desde Ajustes › Acerca de.</sys:String>
+    <sys:String x:Key="Update_Later">Más tarde</sys:String>
+    <sys:String x:Key="Update_BarTitle">Hay una nueva versión de IP Switch</sys:String>
+    <sys:String x:Key="Update_BarMessage">La versión {0} está lista para instalar (tienes la {1}).</sys:String>
+    <sys:String x:Key="Update_AvailableClick">La versión {0} está disponible. Haz clic aquí para actualizar.</sys:String>
     <sys:String x:Key="Update_Confirm">La versión {0} está disponible. IP Switch la descargará, la verificará y se reiniciará.</sys:String>
     <sys:String x:Key="Update_Install">Actualizar ahora</sys:String>
     <sys:String x:Key="Update_Downloading">Descargando la versión {0}…</sys:String>

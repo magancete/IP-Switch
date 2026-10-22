@@ -144,7 +144,7 @@ IPSwitch.exe [options]
 
 ### Updates
 
-With *Check for updates* on, IP Switch tells you when a new release is published. In *Settings → About → Check now*, **Update now** downloads the new `IPSwitch.exe` from GitHub, verifies its SHA-256, replaces the executable in place and restarts — your profiles and settings stay in `%AppData%\IPSwitch`. If anything fails, the current version keeps running unchanged.
+With *Check for updates* on, IP Switch shows a bar at the top of the window when a new release is published (and a dot on the Settings icon); **Update now** downloads the new `IPSwitch.exe` from GitHub, verifies its SHA-256, replaces the executable in place and restarts — your profiles and settings stay in `%AppData%\IPSwitch`. If anything fails, the current version keeps running unchanged.
 
 ### Settings
 

@@ -51,6 +51,28 @@
 
             <ui:NavigationView.Header>
                 <StackPanel Margin="42,24,42,16">
+                    <!-- Pending update: fixed at the top of every page until it is installed or postponed -->
+                    <Border x:Name="UpdateBanner" Visibility="Collapsed" Margin="0,0,0,16" Padding="16,12" CornerRadius="8"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="ArrowDownload24" FontSize="20" Margin="0,0,14,0" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <ui:TextBlock FontTypography="BodyStrong" Text="{DynamicResource Update_BarTitle}" TextWrapping="Wrap" />
+                                <ui:TextBlock x:Name="UpdateBannerMessage" TextWrapping="Wrap"
+                                              Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <ui:Button x:Name="UpdateBannerButton" Appearance="Primary" Click="OnUpdateBannerClick" />
+                                <ui:Button Margin="8,0,0,0" Content="{DynamicResource Update_Later}" Click="OnUpdateLaterClick" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                     <ui:BreadcrumbBar x:Name="BreadcrumbBar" />
                 </StackPanel>
             </ui:NavigationView.Header>
@@ -70,6 +92,7 @@
 
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
+                    x:Name="SettingsNavItem"
                     Content="{DynamicResource Nav_Settings}"
                     Icon="{ui:SymbolIcon Settings24}"
                     NavigationCacheMode="Enabled"

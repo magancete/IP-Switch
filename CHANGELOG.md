@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-22
+
+### Changed
+
+- **Clearer update notice.** When a new version is found at startup, a bar fixed at the top of the window (on every page) offers **Update now** or **Later**, and the Settings icon shows a dot until the update is installed. When the app is only in the notification area, a Windows notification announces it and clicking it opens the window. The check runs a few seconds after the window appears, so the notice is no longer sent to the tray by mistake.
+
 ## [1.0.2] - 2026-10-22
 
 ### Fixed
@@ -48,7 +54,8 @@ Initial release.
 - Single instance, optional start with Windows, optional update check.
 - Data stored in `%AppData%\IPSwitch`.
 
-[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/magancete/IP-Switch/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/magancete/IP-Switch/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/magancete/IP-Switch/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/magancete/IP-Switch/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/magancete/IP-Switch/releases/tag/v1.0.0

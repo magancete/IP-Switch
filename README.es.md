@@ -112,7 +112,7 @@ IPSwitch.exe [opciones]
 
 ### Actualizaciones
 
-Con *Buscar actualizaciones* activado, IP Switch te avisa cuando hay una versión nueva. En *Ajustes → Acerca de → Comprobar ahora*, **Actualizar ahora** descarga el nuevo `IPSwitch.exe` de GitHub, comprueba su SHA-256, sustituye el ejecutable y se reinicia; tus perfiles y ajustes siguen en `%AppData%\IPSwitch`. Si algo falla, sigue funcionando la versión actual sin cambios.
+Con *Buscar actualizaciones* activado, IP Switch muestra una barra en la parte superior de la ventana cuando hay una versión nueva (y un punto en el icono de Ajustes); **Actualizar ahora** descarga el nuevo `IPSwitch.exe` de GitHub, comprueba su SHA-256, sustituye el ejecutable y se reinicia; tus perfiles y ajustes siguen en `%AppData%\IPSwitch`. Si algo falla, sigue funcionando la versión actual sin cambios.
 
 ### Ajustes
 

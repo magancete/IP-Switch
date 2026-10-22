@@ -39,6 +39,9 @@ namespace IPSwitch.Windows
         private TrayFlyoutWindow? _trayFlyout;
         private System.Windows.Controls.ContextMenu? _trayMenu;
 
+        /// <summary>Whether the last tray balloon announced an update (clicking it opens Settings).</summary>
+        private bool _updateBalloonShown;
+
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr window);
         private HotkeyService? _hotkeys;
@@ -126,10 +129,11 @@ namespace IPSwitch.Windows
                 ScheduleTrayTextUpdate();
             };
             AdapterService.HiddenAdaptersChanged += (_, _) => ScheduleTrayTextUpdate();
+            Loc.LanguageChanged += (_, _) => RefreshUpdateBanner();
             NetworkChange.NetworkAddressChanged += (_, _) => Dispatcher.BeginInvoke(new Action(ScheduleTrayTextUpdate));
 
             if (_settings.CheckForUpdates)
-                _ = CheckForUpdatesAsync(silent: true);
+                _ = CheckForUpdatesAtStartupAsync();
 
             _ = RepairAfterMoveAsync();
             AnnounceUpdateIfNeeded();
@@ -197,6 +201,7 @@ namespace IPSwitch.Windows
             if (presenter == null)
             {
                 var icon = appearance == ControlAppearance.Danger ? Forms.ToolTipIcon.Error : Forms.ToolTipIcon.Info;
+                _updateBalloonShown = false;
                 _trayIcon?.ShowBalloonTip(4000, title, string.IsNullOrEmpty(message) ? title : message, icon);
                 return;
             }
@@ -349,6 +354,12 @@ namespace IPSwitch.Windows
             _trayIcon.MouseDoubleClick += (_, e) =>
             {
                 if (e.Button == Forms.MouseButtons.Left) ShowFromTray();
+            };
+            _trayIcon.BalloonTipClicked += (_, _) =>
+            {
+                if (!_updateBalloonShown) return;
+                _updateBalloonShown = false;
+                OpenUpdateInSettings();
             };
             _trayIcon.MouseUp += (_, e) =>
             {
@@ -530,12 +541,11 @@ namespace IPSwitch.Windows
         public async Task<UpdateInfo?> CheckForUpdatesAsync(bool silent)
         {
             var update = await UpdateService.CheckAsync();
+            SetPendingUpdate(update);
 
             // A manual check answers with a dialog (Settings), so only the startup check needs a notification
             if (update != null && silent)
-                ShowNotification(Loc.Get("Update_Title"),
-                    Loc.Format(update.CanInstall ? "Update_AvailableInstall" : "Update_Available", update.Version),
-                    ControlAppearance.Info);
+                ShowUpdateAvailable(update);
             else if (update == null && !silent)
                 ShowNotification(Loc.Get("Update_Title"), Loc.Get("Update_UpToDate"), ControlAppearance.Success);
 
@@ -574,6 +584,105 @@ namespace IPSwitch.Windows
                 return;
 
             ExitApplication();
+        }
+
+        /// <summary>
+        /// Startup check, a few seconds after the window is shown: it does not compete with the start, and the
+        /// notification appears in the window (the check used to finish before the window was visible, so the
+        /// announcement went to the tray instead).
+        /// </summary>
+        private async Task CheckForUpdatesAtStartupAsync()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            await CheckForUpdatesAsync(silent: true);
+        }
+
+        /// <summary>Newer version found by the last check, or <see langword="null"/>.</summary>
+        public UpdateInfo? PendingUpdate { get; private set; }
+
+        /// <summary>Raised when <see cref="PendingUpdate"/> changes (the Settings page shows or hides its bar).</summary>
+        public event EventHandler? PendingUpdateChanged;
+
+        /// <summary>Remembers the pending update and marks the Settings item with a badge while there is one.</summary>
+        /// <param name="update">Newer version, or <see langword="null"/> if there is none.</param>
+        private void SetPendingUpdate(UpdateInfo? update)
+        {
+            PendingUpdate = update;
+            SettingsNavItem.InfoBadge = update == null ? null : new InfoBadge { Severity = InfoBadgeSeverity.Attention };
+            RefreshUpdateBanner();
+            PendingUpdateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>Whether the user postponed the pending update ("Later") until the next start.</summary>
+        private bool _updateBannerDismissed;
+
+        /// <summary>
+        /// Announces a new version. In the main window the banner at the top already shows it (see
+        /// <see cref="RefreshUpdateBanner"/>); when the app is only in the tray or in the compact view, a Windows
+        /// notification is shown instead, and clicking it opens the full window with the banner.
+        /// </summary>
+        private void ShowUpdateAvailable(UpdateInfo update)
+        {
+            if (IsVisible) return;
+
+            _trayIcon?.ShowBalloonTip(10000, Loc.Get("Update_Title"),
+                Loc.Format("Update_AvailableClick", update.Version), Forms.ToolTipIcon.Info);
+            _updateBalloonShown = true;
+        }
+
+        /// <summary>Shows the banner at the top of the main window while an update is pending and not postponed.</summary>
+        private void RefreshUpdateBanner()
+        {
+            var update = PendingUpdate;
+            UpdateBanner.Visibility = update != null && !_updateBannerDismissed ? Visibility.Visible : Visibility.Collapsed;
+            if (update == null) return;
+
+            UpdateBannerMessage.Text = Loc.Format("Update_BarMessage", update.Version, UpdateService.CurrentVersion);
+            UpdateBannerButton.Content = Loc.Get(update.CanInstall ? "Update_Install" : "Update_Open");
+        }
+
+        private async void OnUpdateBannerClick(object sender, RoutedEventArgs e)
+        {
+            if (PendingUpdate is not { } update) return;
+
+            UpdateBannerButton.IsEnabled = false;
+            try
+            {
+                await StartUpdateAsync(update);
+            }
+            finally
+            {
+                UpdateBannerButton.IsEnabled = true;
+            }
+        }
+
+        private void OnUpdateLaterClick(object sender, RoutedEventArgs e)
+        {
+            _updateBannerDismissed = true;
+            RefreshUpdateBanner();
+        }
+
+        /// <summary>Installs the update, or opens its release page if it cannot be installed from the app.</summary>
+        /// <param name="update">Release to install.</param>
+        /// <returns>A task that completes when the update failed or the page was opened.</returns>
+        public async Task StartUpdateAsync(UpdateInfo update)
+        {
+            if (update.CanInstall)
+            {
+                await InstallUpdateAsync(update);
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo(update.Url) { UseShellExecute = true });
+        }
+
+        /// <summary>Shows the full window, where the banner offers the pending update.</summary>
+        private void OpenUpdateInSettings()
+        {
+            _updateBannerDismissed = false;
+            RefreshUpdateBanner();
+            if (_settings.CompactMode) ExitCompactMode();
+            else ShowWindow(this);
         }
 
         /// <summary>
